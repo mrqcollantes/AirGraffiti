@@ -1,0 +1,3 @@
+C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/AirGraffiti.dir
+C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/ZERO_CHECK.dir
