@@ -34,7 +34,10 @@ public:
         SDL_Color color
     );
 
+    void GetWindowSize(int& outWidth, int& outHeight);
+
     SDL_Renderer* GetSDLRenderer();
+    SDL_Window* GetSDLWindow();
 
 private:
     SDL_Window* window;

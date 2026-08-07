@@ -90,6 +90,11 @@ void Renderer::EndFrame()
     SDL_RenderPresent(renderer);
 }
 
+void Renderer::GetWindowSize(int& outWidth, int& outHeight)
+{
+    SDL_GetWindowSize(window, &outWidth, &outHeight);
+}
+
 void Renderer::DrawPoint(
     int x,
     int y,
@@ -137,4 +142,9 @@ void Renderer::DrawLine(
 SDL_Renderer* Renderer::GetSDLRenderer()
 {
     return renderer;
+}
+
+SDL_Window* Renderer::GetSDLWindow()
+{
+    return window;
 }

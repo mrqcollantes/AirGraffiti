@@ -1,4 +1,6 @@
 #include "inputmanager.h"
+#include "backends/imgui_impl_sdl3.h"
+#include "imgui.h"
 
 InputManager::InputManager()
 {
@@ -12,8 +14,12 @@ void InputManager::Update()
     pointer.previousX = pointer.x;
     pointer.previousY = pointer.y;
 
+    ImGuiIO& io = ImGui::GetIO();
+
     while (SDL_PollEvent(&event))
     {
+        ImGui_ImplSDL3_ProcessEvent(&event);
+
         switch (event.type)
         {
         case SDL_EVENT_QUIT:
@@ -21,12 +27,15 @@ void InputManager::Update()
             break;
 
         case SDL_EVENT_MOUSE_MOTION:
-            pointer.x = event.motion.x;
-            pointer.y = event.motion.y;
+            if (!io.WantCaptureMouse)
+            {
+                pointer.x = event.motion.x;
+                pointer.y = event.motion.y;
+            }
             break;
 
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            if (event.button.button == SDL_BUTTON_LEFT)
+            if (event.button.button == SDL_BUTTON_LEFT && !io.WantCaptureMouse)
             {
                 pointer.drawing = true;
             }

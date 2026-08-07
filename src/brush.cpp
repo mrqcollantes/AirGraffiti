@@ -69,27 +69,32 @@ void Brush::DrawStroke(Canvas& canvas,
     float distance = std::sqrt(
         static_cast<float>(dx * dx + dy * dy));
 
+    canvas.BeginDraw(renderer);
+
     if (distance < 1.0f)
     {
         DrawCircle(canvas, renderer, x1, y1);
-        return;
     }
-
-    float stepX = dx / distance;
-    float stepY = dy / distance;
-
-    float currentX = static_cast<float>(x1);
-    float currentY = static_cast<float>(y1);
-
-    for (int i = 0; i <= static_cast<int>(distance); i++)
+    else
     {
-        DrawCircle(
-            canvas,
-            renderer,
-            static_cast<int>(currentX),
-            static_cast<int>(currentY));
+        float stepX = dx / distance;
+        float stepY = dy / distance;
 
-        currentX += stepX;
-        currentY += stepY;
+        float currentX = static_cast<float>(x1);
+        float currentY = static_cast<float>(y1);
+
+        for (int i = 0; i <= static_cast<int>(distance); i++)
+        {
+            DrawCircle(
+                canvas,
+                renderer,
+                static_cast<int>(currentX),
+                static_cast<int>(currentY));
+
+            currentX += stepX;
+            currentY += stepY;
+        }
     }
+
+    canvas.EndDraw(renderer);
 }

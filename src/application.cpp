@@ -10,37 +10,56 @@ bool Application::Init()
     if (!renderer.Init("AirGraffiti", 1280, 720))
         return false;
 
-    canvas.Create(renderer, 1280, 720);
+    if (!canvas.Create(renderer, 1280, 720))
+        return false;
+
+    if (!ui.Init(renderer))
+        return false;
 
     return true;
 }
 
 void Application::Run()
 {
+    SDL_Log("Application::Run() started");
+
     while (running)
     {
         input.Update();
 
+        SDL_Log("Application loop running");
+
         if (input.ShouldQuit())
+        {
+            SDL_Log("ShouldQuit() returned TRUE");
             running = false;
+        }
 
         Update();
-
         Render();
     }
+
+    SDL_Log("Application::Run() ended");
 }
 
 void Application::Update()
 {
     if (input.GetPointer().drawing)
     {
+        int windowWidth = 0;
+        int windowHeight = 0;
+        renderer.GetWindowSize(windowWidth, windowHeight);
+
+        float scaleX = static_cast<float>(canvas.GetWidth()) / static_cast<float>(windowWidth);
+        float scaleY = static_cast<float>(canvas.GetHeight()) / static_cast<float>(windowHeight);
+
         brush.DrawStroke(
             canvas,
             renderer,
-            static_cast<int>(input.GetPointer().previousX),
-            static_cast<int>(input.GetPointer().previousY),
-            static_cast<int>(input.GetPointer().x),
-            static_cast<int>(input.GetPointer().y)
+            static_cast<int>(input.GetPointer().previousX * scaleX),
+            static_cast<int>(input.GetPointer().previousY * scaleY),
+            static_cast<int>(input.GetPointer().x * scaleX),
+            static_cast<int>(input.GetPointer().y * scaleY)
         );
     }
 }
@@ -49,10 +68,14 @@ void Application::Render()
 {
     renderer.BeginFrame();
     canvas.Draw(renderer);
+    ui.BeginFrame();
+    ui.Draw(brush, canvas, renderer);
+    ui.EndFrame();
     renderer.EndFrame();
 }
 
 void Application::Shutdown()
 {
+    ui.Shutdown();
     renderer.Shutdown();
 }

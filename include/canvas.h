@@ -13,20 +13,22 @@ public:
     bool Create(Renderer& renderer, int width, int height);
 
     void Draw(Renderer& renderer);
-
     void Clear(Renderer& renderer);
-
+    void BeginDraw(Renderer& renderer);
+    void EndDraw(Renderer& renderer);
     void DrawPoint(Renderer& renderer,
                    int x,
                    int y,
                    SDL_Color color);
-
     void DrawLine(Renderer& renderer,
                   int x1,
                   int y1,
                   int x2,
                   int y2,
                   SDL_Color color);
+
+    int GetWidth() const { return width; }
+    int GetHeight() const { return height; }
 
 private:
 

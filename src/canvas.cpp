@@ -68,17 +68,30 @@ void Canvas::Clear(Renderer& renderer)
 
 void Canvas::Draw(Renderer& renderer)
 {
-    SDL_SetRenderTarget(
-        renderer.GetSDLRenderer(),
-        nullptr
-    );
+    SDL_Renderer* sdlRenderer = renderer.GetSDLRenderer();
+
+    // Make sure we are rendering to the window
+    SDL_SetRenderTarget(sdlRenderer, nullptr);
 
     SDL_RenderTexture(
-        renderer.GetSDLRenderer(),
+        sdlRenderer,
         texture,
         nullptr,
         nullptr
     );
+
+    // Explicitly leave the renderer targeting the window
+    SDL_SetRenderTarget(sdlRenderer, nullptr);
+}
+
+void Canvas::BeginDraw(Renderer& renderer)
+{
+    SDL_SetRenderTarget(renderer.GetSDLRenderer(), texture);
+}
+
+void Canvas::EndDraw(Renderer& renderer)
+{
+    SDL_SetRenderTarget(renderer.GetSDLRenderer(), nullptr);
 }
 
 void Canvas::DrawPoint(
@@ -87,11 +100,6 @@ void Canvas::DrawPoint(
     int y,
     SDL_Color color)
 {
-    SDL_SetRenderTarget(
-        renderer.GetSDLRenderer(),
-        texture
-    );
-
     SDL_SetRenderDrawColor(
         renderer.GetSDLRenderer(),
         color.r,
@@ -105,11 +113,6 @@ void Canvas::DrawPoint(
         static_cast<float>(x),
         static_cast<float>(y)
     );
-
-    SDL_SetRenderTarget(
-        renderer.GetSDLRenderer(),
-        nullptr
-    );
 }
 
 void Canvas::DrawLine(
@@ -120,11 +123,6 @@ void Canvas::DrawLine(
     int y2,
     SDL_Color color)
 {
-    SDL_SetRenderTarget(
-        renderer.GetSDLRenderer(),
-        texture
-    );
-
     SDL_SetRenderDrawColor(
         renderer.GetSDLRenderer(),
         color.r,
@@ -139,10 +137,5 @@ void Canvas::DrawLine(
         static_cast<float>(y1),
         static_cast<float>(x2),
         static_cast<float>(y2)
-    );
-
-    SDL_SetRenderTarget(
-        renderer.GetSDLRenderer(),
-        nullptr
     );
 }

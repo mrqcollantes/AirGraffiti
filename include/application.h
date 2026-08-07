@@ -5,6 +5,7 @@
 #include "canvas.h"
 #include "brush.h"
 #include "inputmanager.h"
+#include "ui.h"
 
 class Application
 {
@@ -19,6 +20,7 @@ class Application
         Canvas canvas;
         Brush brush;
         InputManager input;
+        UI ui;
         void Update();
         void Render();
 };

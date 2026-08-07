@@ -1,0 +1,8 @@
+================================================================================
+Linker Errors
+Generated: 2026-08-07T22:49:54.536Z
+Total Errors: 1
+================================================================================
+
+[LNK1168] (MSVC)
+cannot open C:\Users\mcollant\Documents\AirGraffiti\build\Debug\AirGraffiti.exe for writing [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
