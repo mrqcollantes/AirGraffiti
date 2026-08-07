@@ -21,25 +21,18 @@ bool Application::Init()
 
 void Application::Run()
 {
-    SDL_Log("Application::Run() started");
-
     while (running)
     {
         input.Update();
 
-        SDL_Log("Application loop running");
-
         if (input.ShouldQuit())
         {
-            SDL_Log("ShouldQuit() returned TRUE");
             running = false;
         }
 
         Update();
         Render();
     }
-
-    SDL_Log("Application::Run() ended");
 }
 
 void Application::Update()

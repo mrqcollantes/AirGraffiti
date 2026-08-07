@@ -57,6 +57,9 @@ bool Renderer::Init(const std::string& title, int width, int height)
 
 void Renderer::Shutdown()
 {
+    if (!renderer && !window)
+        return;
+
     if (renderer)
     {
         SDL_DestroyRenderer(renderer);

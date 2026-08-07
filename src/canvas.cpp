@@ -79,9 +79,6 @@ void Canvas::Draw(Renderer& renderer)
         nullptr,
         nullptr
     );
-
-    // Explicitly leave the renderer targeting the window
-    SDL_SetRenderTarget(sdlRenderer, nullptr);
 }
 
 void Canvas::BeginDraw(Renderer& renderer)
