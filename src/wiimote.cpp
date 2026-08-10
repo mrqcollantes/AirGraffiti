@@ -145,13 +145,17 @@ void WiiMote::ProcessIRData()
         }
     }
 
-    // No IR source, Do NOT print anything.
+    // No IR source.
     if (visiblePointCount < WiiMoteConfig::MIN_VISIBLE_POINTS)
     {
+        if (wasDetecting)
+        {
+            std::printf("[IR] Signal lost\n");
+        }
+
         wasDetecting = false;
         return;
     }
-
 
     // Select first visible IR source
     for (int i = 0; i < 4; ++i)
@@ -187,16 +191,17 @@ void WiiMote::ProcessIRData()
         irPoint.y = std::clamp(irPoint.y, 0.0f, static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT - 1));
 
         // Debug output
-        if (!wasDetecting)
-        {
-            std::printf(
-                "[IR] Signal detected\n"
-                "     Raw:    (%d, %d)\n"
-                "     Canvas: (%.1f, %.1f)\n",
-                irPoint.rawX, irPoint.rawY, irPoint.x, irPoint.y
-            );
-        }
-        wasDetecting = true;
+        std::printf(
+            "\r[IR] X: %7.1f  Y: %7.1f  Raw: (%4d, %4d)  Points: %d   ",
+            irPoint.x,
+            irPoint.y,
+            irPoint.rawX,
+            irPoint.rawY,
+            visiblePointCount
+        );
+
+        std::fflush(stdout);
+
         break;
     }
 }
@@ -248,24 +253,20 @@ bool WiiMote::IsInitialized() const
     return initialized;
 }
 
-
 bool WiiMote::IsConnected() const
 {
     return connected;
 }
-
 
 bool WiiMote::HasIRPoint() const
 {
     return visiblePointCount >= WiiMoteConfig::MIN_VISIBLE_POINTS;
 }
 
-
 int WiiMote::GetVisiblePointCount() const
 {
     return visiblePointCount;
 }
-
 
 const WiiMoteIRPoint& WiiMote::GetIRPoint() const
 {

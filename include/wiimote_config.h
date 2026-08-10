@@ -16,7 +16,7 @@ namespace WiiMoteConfig
     constexpr int IR_HEIGHT = 768;
 
     // Wiiuse IR sensitivity. Valid range: 1 - 5
-    constexpr int IR_SENSITIVITY = 5;
+    constexpr int IR_SENSITIVITY = 1;
 
     constexpr int OUTPUT_WIDTH = 1280;
     constexpr int OUTPUT_HEIGHT = 720;

@@ -23,6 +23,9 @@ class Application
         InputManager input;
         UI ui;
         WiiMote wiimote;
+        bool previousIRValid = false;
+        int previousIRX = 0;
+        int previousIRY = 0;
         void Update();
         void Render();
 };
