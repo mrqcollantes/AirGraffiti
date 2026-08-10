@@ -178,6 +178,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{C9B5C629-6BAF-398D-8087-387728A59F1B}</Project>
       <Name>AirGraffiti</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\mcollant\Documents\AirGraffiti\build\wiiuse\src\wiiuse.vcxproj">
+      <Project>{1F9EAFEF-9C00-36AB-977C-31DA12B71B95}</Project>
+      <Name>wiiuse</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

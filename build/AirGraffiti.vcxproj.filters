@@ -25,6 +25,9 @@
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimote.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

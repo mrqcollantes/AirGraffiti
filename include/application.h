@@ -6,6 +6,7 @@
 #include "brush.h"
 #include "inputmanager.h"
 #include "ui.h"
+#include "wiimote.h"
 
 class Application
 {
@@ -21,6 +22,7 @@ class Application
         Brush brush;
         InputManager input;
         UI ui;
+        WiiMote wiimote;
         void Update();
         void Render();
 };

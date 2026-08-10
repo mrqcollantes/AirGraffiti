@@ -1,0 +1,47 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"external/wiiuse/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 10
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "wiiuse::@1accbda2a3cfd94b278c"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "ALL_BUILD::@3c5a5a94a1f829f6e499",
+	"isGeneratorProvided" : true,
+	"name" : "ALL_BUILD",
+	"orderDependencies" : 
+	[
+		{
+			"id" : "wiiuse::@1accbda2a3cfd94b278c"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "wiiuse",
+		"source" : "external/wiiuse"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

@@ -1,4 +1,5 @@
 #include "application.h"
+#include <cstdio>
 
 Application::Application()
 {
@@ -9,13 +10,14 @@ bool Application::Init()
 {
     if (!renderer.Init("AirGraffiti", 1280, 720))
         return false;
-
     if (!canvas.Create(renderer, 1280, 720))
         return false;
-
     if (!ui.Init(renderer))
         return false;
-
+    if (!wiimote.Init())
+    {
+        std::printf("[Application] Wii Remote initialization failed.\n");
+    }    
     return true;
 }
 
@@ -37,6 +39,7 @@ void Application::Run()
 
 void Application::Update()
 {
+    wiimote.Update();
     if (input.GetPointer().drawing)
     {
         int windowWidth = 0;

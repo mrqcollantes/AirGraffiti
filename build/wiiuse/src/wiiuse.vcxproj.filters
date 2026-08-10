@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\classic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\dynamics.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\events.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\guitar_hero_3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\io.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\ir.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\nunchuk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiuse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiboard.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\motion_plus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\tatacon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\os_win.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\classic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\definitions_os.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\dynamics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\guitar_hero_3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\motion_plus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\ir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\nunchuk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\os.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\tatacon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiuse_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiuse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\wiiuse_msvcstdint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0BADD3F1-940E-3482-AEC3-1EAC3E6754CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E185580B-0D22-3C0F-9250-F75DEE9F3C61}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

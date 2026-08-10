@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BufferSecurityCheck></BufferSecurityCheck>
@@ -105,16 +105,16 @@
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WIIUSE_STATIC;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WIIUSE_STATIC;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -134,7 +134,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;wiiuse\src\Debug\wiiuse_debug.lib;hid.lib;setupapi.lib;ws2_32.lib;setupapi.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\hid.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\SetupAPI.Lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -153,7 +153,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck></BufferSecurityCheck>
@@ -171,18 +171,18 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -202,7 +202,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;wiiuse\src\Release\wiiuse.lib;hid.lib;setupapi.lib;ws2_32.lib;setupapi.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\hid.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\SetupAPI.Lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -221,7 +221,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck></BufferSecurityCheck>
@@ -239,18 +239,18 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -270,7 +270,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;wiiuse\src\MinSizeRel\wiiuse.lib;hid.lib;setupapi.lib;ws2_32.lib;setupapi.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\hid.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\SetupAPI.Lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -289,7 +289,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck></BufferSecurityCheck>
@@ -308,16 +308,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIIUSE_STATIC;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mcollant\Documents\AirGraffiti\include;C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\include;C:\Users\mcollant\Documents\AirGraffiti\external\wiiuse\src;C:\Users\mcollant\Documents\AirGraffiti\external\imgui;C:\Users\mcollant\Documents\AirGraffiti\external\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -337,7 +337,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\mcollant\Documents\AirGraffiti\external\SDL3-3.4.14\lib\x64\SDL3.lib;wiiuse\src\RelWithDebInfo\wiiuse.lib;hid.lib;setupapi.lib;ws2_32.lib;setupapi.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\hid.lib;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\SetupAPI.Lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -420,6 +420,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\pointer.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\renderer.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\ui.cpp" />
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimote.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui_draw.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui_tables.cpp" />
@@ -435,6 +436,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\mcollant\Documents\AirGraffiti\build\wiiuse\src\wiiuse.vcxproj">
+      <Project>{1F9EAFEF-9C00-36AB-977C-31DA12B71B95}</Project>
+      <Name>wiiuse</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

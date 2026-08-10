@@ -33,10 +33,7 @@ int Brush::GetSize() const
     return size;
 }
 
-void Brush::DrawCircle(Canvas& canvas,
-                       Renderer& renderer,
-                       int x,
-                       int y)
+void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
 {
     int radius = size / 2;
 
@@ -56,12 +53,7 @@ void Brush::DrawCircle(Canvas& canvas,
     }
 }
 
-void Brush::DrawStroke(Canvas& canvas,
-                       Renderer& renderer,
-                       int x1,
-                       int y1,
-                       int x2,
-                       int y2)
+void Brush::DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x2, int y2)
 {
     int dx = x2 - x1;
     int dy = y2 - y1;
@@ -79,7 +71,6 @@ void Brush::DrawStroke(Canvas& canvas,
     {
         float stepX = dx / distance;
         float stepY = dy / distance;
-
         float currentX = static_cast<float>(x1);
         float currentY = static_cast<float>(y1);
 
@@ -95,6 +86,5 @@ void Brush::DrawStroke(Canvas& canvas,
             currentY += stepY;
         }
     }
-
     canvas.EndDraw(renderer);
 }

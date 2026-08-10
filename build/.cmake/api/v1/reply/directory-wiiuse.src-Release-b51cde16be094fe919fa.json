@@ -1,0 +1,61 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"external/wiiuse/src/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 107,
+				"parent" : 0
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 10
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "development",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"wiiuse/src/Release/wiiuse.lib"
+			],
+			"targetId" : "wiiuse::@1accbda2a3cfd94b278c",
+			"targetIndex" : 4,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "development",
+			"destination" : "include",
+			"paths" : 
+			[
+				"external/wiiuse/src/wiiuse.h",
+				"external/wiiuse/src/wiiuse_msvcstdint.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "wiiuse/src",
+		"source" : "external/wiiuse/src"
+	}
+}

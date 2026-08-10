@@ -1,8 +1,38 @@
 ================================================================================
 Linker Errors
-Generated: 2026-08-07T22:49:54.536Z
-Total Errors: 1
+Generated: 2026-08-10T18:38:39.687Z
+Total Errors: 11
 ================================================================================
 
-[LNK1168] (MSVC)
-cannot open C:\Users\mcollant\Documents\AirGraffiti\build\Debug\AirGraffiti.exe for writing [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_init referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_cleanup referenced in function "public: void __cdecl WiiMote::Shutdown(void)" (?Shutdown@WiiMote@@QEAAXXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_find referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_connect referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_disconnect referenced in function "public: void __cdecl WiiMote::Shutdown(void)" (?Shutdown@WiiMote@@QEAAXXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_poll referenced in function "public: void __cdecl WiiMote::Update(void)" (?Update@WiiMote@@QEAAXXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_set_ir referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_set_ir_vres referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_set_aspect_ratio referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK2019] (MSVC)
+unresolved external symbol __imp_wiiuse_set_ir_sensitivity referenced in function "public: bool __cdecl WiiMote::Init(void)" (?Init@WiiMote@@QEAA_NXZ) [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
+
+[LNK1120] (MSVC)
+10 unresolved externals [C:\Users\mcollant\Documents\AirGraffiti\build\AirGraffiti.vcxproj]
