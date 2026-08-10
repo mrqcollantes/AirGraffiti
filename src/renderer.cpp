@@ -77,14 +77,7 @@ void Renderer::Shutdown()
 
 void Renderer::BeginFrame()
 {
-    SDL_SetRenderDrawColor(
-        renderer,
-        40,
-        40,
-        40,
-        255
-    );
-
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
     SDL_RenderClear(renderer);
 }
 
@@ -98,48 +91,16 @@ void Renderer::GetWindowSize(int& outWidth, int& outHeight)
     SDL_GetWindowSize(window, &outWidth, &outHeight);
 }
 
-void Renderer::DrawPoint(
-    int x,
-    int y,
-    SDL_Color color)
+void Renderer::DrawPoint(int x, int y, SDL_Color color)
 {
-    SDL_SetRenderDrawColor(
-        renderer,
-        color.r,
-        color.g,
-        color.b,
-        color.a
-    );
-
-    SDL_RenderPoint(
-        renderer,
-        static_cast<float>(x),
-        static_cast<float>(y)
-    );
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderPoint(renderer, static_cast<float>(x), static_cast<float>(y));
 }
 
-void Renderer::DrawLine(
-    int x1,
-    int y1,
-    int x2,
-    int y2,
-    SDL_Color color)
+void Renderer::DrawLine(int x1, int y1, int x2, int y2, SDL_Color color)
 {
-    SDL_SetRenderDrawColor(
-        renderer,
-        color.r,
-        color.g,
-        color.b,
-        color.a
-    );
-
-    SDL_RenderLine(
-        renderer,
-        static_cast<float>(x1),
-        static_cast<float>(y1),
-        static_cast<float>(x2),
-        static_cast<float>(y2)
-    );
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderLine(renderer, static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(x2), static_cast<float>(y2));
 }
 
 SDL_Renderer* Renderer::GetSDLRenderer()

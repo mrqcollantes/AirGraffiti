@@ -31,7 +31,7 @@ void Application::Run()
         {
             running = false;
         }
-
+        
         Update();
         Render();
     }

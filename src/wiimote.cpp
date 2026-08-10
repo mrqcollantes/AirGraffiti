@@ -23,9 +23,7 @@ bool WiiMote::Init()
     if (initialized)
         return true;
 
-    std::printf(
-        "[WiiMote] Initializing...\n"
-    );
+    std::printf("[WiiMote] Initializing...\n");
 
     // Allocate Wiiuse structures
     wiimotes = wiiuse_init(
@@ -34,26 +32,20 @@ bool WiiMote::Init()
 
     if (!wiimotes)
     {
-        std::printf(
-            "[WiiMote] ERROR: wiiuse_init() failed.\n"
-        );
+        std::printf("[WiiMote] ERROR: wiiuse_init() failed.\n");
         return false;
     }
 
     initialized = true;
 
     // Search for Wii Remotes
-    std::printf(
-        "[WiiMote] Searching for Wii Remote...\n"
-    );
+    std::printf("[WiiMote] Searching for Wii Remote...\n");
 
     int found = wiiuse_find(wiimotes, WiiMoteConfig::MAX_WIIMOTES, 5);
 
     if (found <= 0)
     {
-        std::printf(
-            "[WiiMote] No Wii Remote found.\n"
-        );
+        std::printf("[WiiMote] No Wii Remote found.\n");
         return true;
     }
 
@@ -62,17 +54,13 @@ bool WiiMote::Init()
 
     if (connectedCount <= 0)
     {
-        std::printf(
-            "[WiiMote] Could not connect to Wii Remote.\n"
-        );
+        std::printf("[WiiMote] Could not connect to Wii Remote.\n");
         return true;
     }
 
     connected = true;
 
-    std::printf(
-        "[WiiMote] Connected.\n"
-    );
+    std::printf("[WiiMote] Connected.\n");
 
     // Configure IR camera
     for (int i = 0; i < connectedCount; ++i)
@@ -92,10 +80,7 @@ bool WiiMote::Init()
         // Use 16:9 output space.
         wiiuse_set_aspect_ratio(wiimotes[i], WIIUSE_ASPECT_16_9);
     }
-
-    std::printf(
-        "[WiiMote] IR camera ready.\n"
-    );
+    std::printf("[WiiMote] IR camera ready.\n");
     return true;
 }
 
@@ -109,7 +94,7 @@ void WiiMote::Update()
     if (!wiimotes)
         return;
     
-        // Poll Wiiuse
+    // Poll Wiiuse
     if (!wiiuse_poll( wiimotes, WiiMoteConfig::MAX_WIIMOTES))
     {
         return;
@@ -127,18 +112,13 @@ void WiiMote::Update()
         if (wm->event == WIIUSE_DISCONNECT || wm->event == WIIUSE_UNEXPECTED_DISCONNECT)
         {
             connected = false;
-
-            std::printf(
-                "[WiiMote] Disconnected.\n"
-            );
-
+            std::printf("[WiiMote] Disconnected.\n");
             ResetIRData();
             continue;
         }
         ProcessIRData();
     }
 }
-
 
 // IR processing
 void WiiMote::ProcessIRData()
@@ -221,7 +201,6 @@ void WiiMote::ProcessIRData()
     }
 }
 
-
 // Reset IR state
 void WiiMote::ResetIRData()
 {
@@ -233,16 +212,13 @@ void WiiMote::ResetIRData()
     irPoint.y = 0.0f;
 }
 
-
 // Shutdown
 void WiiMote::Shutdown()
 {
     if (!initialized)
         return;
 
-    std::printf(
-        "[WiiMote] Shutting down...\n"
-    );
+    std::printf("[WiiMote] Shutting down...\n");
 
     if (wiimotes)
     {
@@ -262,9 +238,7 @@ void WiiMote::Shutdown()
 
     connected = false;
     initialized = false;
-
     ResetIRData();
-
     std::printf("[WiiMote] Shutdown complete.\n");
 }
 

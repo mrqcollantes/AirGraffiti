@@ -2,7 +2,6 @@
 #include "renderer.h"
 #include "brush.h"
 #include "canvas.h"
-
 #include "imgui.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
@@ -24,16 +23,13 @@ bool UI::Init(Renderer& renderer)
 
     ImGui::StyleColorsDark();
 
-    if (!ImGui_ImplSDL3_InitForSDLRenderer(
-            renderer.GetSDLWindow(),
-            renderer.GetSDLRenderer()))
+    if (!ImGui_ImplSDL3_InitForSDLRenderer(renderer.GetSDLWindow(), renderer.GetSDLRenderer()))
     {
         SDL_Log("ERROR: ImGui SDL3 initialization failed!");
         return false;
     }
 
-    if (!ImGui_ImplSDLRenderer3_Init(
-            renderer.GetSDLRenderer()))
+    if (!ImGui_ImplSDLRenderer3_Init(renderer.GetSDLRenderer()))
     {
         SDL_Log("ERROR: ImGui SDL Renderer initialization failed!");
         return false;
@@ -55,17 +51,11 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
 {
     ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(260, 160), ImGuiCond_FirstUseEver);
-
     ImGui::Begin("AirGraffiti");
 
-    // --- Color picker ---
+    // Color picker
     SDL_Color current = brush.GetColor();
-    float colorArr[4] = {
-        current.r / 255.0f,
-        current.g / 255.0f,
-        current.b / 255.0f,
-        current.a / 255.0f
-    };
+    float colorArr[4] = {current.r / 255.0f, current.g / 255.0f, current.b / 255.0f, current.a / 255.0f};
 
     if (ImGui::ColorEdit4("Color", colorArr))
     {
@@ -78,7 +68,7 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
         brush.SetColor(newColor);
     }
 
-    // --- Brush size ---
+    // Brush size
     int size = brush.GetSize();
     if (ImGui::SliderInt("Brush Size", &size, 1, 64))
     {
@@ -87,7 +77,7 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
 
     ImGui::Separator();
 
-    // --- Clear canvas ---
+    // Clear canvas
     if (ImGui::Button("Clear Canvas"))
     {
         canvas.Clear(renderer);
@@ -99,17 +89,12 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
 void UI::EndFrame()
 {
     ImGui::Render();
-
-    ImGui_ImplSDLRenderer3_RenderDrawData(
-        ImGui::GetDrawData(),
-        sdlRenderer
-    );
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), sdlRenderer);
 }
 
 void UI::Shutdown()
 {
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
-
     ImGui::DestroyContext();
 }

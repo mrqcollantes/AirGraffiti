@@ -5,8 +5,6 @@
 //
 // This is the ONLY file intended for values that may need to
 // change when testing the IR spray cans.
-//
-// Do not put spray-can-specific values in wiimote.cpp.
 // ============================================================
 
 namespace WiiMoteConfig

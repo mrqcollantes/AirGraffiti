@@ -5,19 +5,12 @@
 
 class InputManager
 {
-public:
-
-    InputManager();
-
-    void Update();
-
-    bool ShouldQuit() const;
-
-    Pointer& GetPointer();
-
-private:
-
-    bool quit;
-
-    Pointer pointer;
+    public:
+        InputManager();
+        void Update();
+        bool ShouldQuit() const;
+        Pointer& GetPointer();
+    private:
+        bool quit;
+        Pointer pointer;
 };
