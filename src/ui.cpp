@@ -2,13 +2,15 @@
 #include "renderer.h"
 #include "brush.h"
 #include "canvas.h"
+
 #include "imgui.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
 
-UI::UI()
-{
-}
+// The UI class manages the ImGui user interface, including
+// initialization, frame management, and rendering of UI elements.
+
+UI::UI(){}
 
 bool UI::Init(Renderer& renderer)
 {

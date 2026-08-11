@@ -1,6 +1,8 @@
 #include "canvas.h"
 #include "renderer.h"
 
+// The Canvas class manages an off-screen texture that can be drawn to and then rendered to the window.
+
 Canvas::Canvas()
 {
     texture = nullptr;
@@ -27,8 +29,7 @@ bool Canvas::Create(Renderer& renderer, int width, int height)
         SDL_PIXELFORMAT_RGBA8888,
         SDL_TEXTUREACCESS_TARGET,
         width,
-        height
-    );
+        height);
 
     if (!texture)
         return false;

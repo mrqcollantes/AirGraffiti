@@ -1,6 +1,11 @@
 #include "application.h"
 #include <cstdio>
 
+// The Application class serves as the main entry point for the AirGraffiti application.
+// It manages the initialization, main loop, and shutdown of the application, coordinating
+// between the Renderer, Canvas, Brush, InputManager, UI, and WiiMote classes to provide a
+// cohesive drawing experience.
+
 Application::Application()
 {
     running = true;
@@ -43,17 +48,9 @@ void Application::Run()
 
 void Application::Update()
 {
-    // --------------------------------------------------------
-    // Update Wii Remote
-    // --------------------------------------------------------
-
     wiimote.Update();
 
-
-    // --------------------------------------------------------
     // Mouse drawing
-    // --------------------------------------------------------
-
     if (input.GetPointer().drawing)
     {
         int windowWidth = 0;
@@ -61,17 +58,10 @@ void Application::Update()
 
         renderer.GetWindowSize(windowWidth, windowHeight);
 
-        float scaleX =
-            static_cast<float>(canvas.GetWidth()) /
-            static_cast<float>(windowWidth);
+        float scaleX = static_cast<float>(canvas.GetWidth()) / static_cast<float>(windowWidth);
+        float scaleY = static_cast<float>(canvas.GetHeight()) / static_cast<float>(windowHeight);
 
-        float scaleY =
-            static_cast<float>(canvas.GetHeight()) /
-            static_cast<float>(windowHeight);
-
-        brush.DrawStroke(
-            canvas,
-            renderer,
+        brush.DrawStroke(canvas, renderer,
             static_cast<int>(input.GetPointer().previousX * scaleX),
             static_cast<int>(input.GetPointer().previousY * scaleY),
             static_cast<int>(input.GetPointer().x * scaleX),
@@ -79,49 +69,28 @@ void Application::Update()
         );
     }
 
-
-    // --------------------------------------------------------
     // Wii Remote IR drawing
-    // --------------------------------------------------------
-
     if (wiimote.HasIRPoint())
     {
         const WiiMoteIRPoint& ir = wiimote.GetIRPoint();
 
-        // The WiiMote class has already converted the raw
-        // IR coordinates into canvas coordinates.
+        // Convert Wiiuse IR coordinates to canvas coordinates
         int x = static_cast<int>(ir.x);
         int y = canvas.GetHeight() - static_cast<int>(ir.y);
 
-        // Keep the previous IR position so the brush creates
-        // a continuous stroke rather than individual dots.
+        // Draw a stroke from the previous IR point to the current one.
         static bool previousIRValid = false;
         static int previousIRX = 0;
         static int previousIRY = 0;
 
         if (previousIRValid)
         {
-            brush.DrawStroke(
-                canvas,
-                renderer,
-                previousIRX,
-                previousIRY,
-                x,
-                y
-            );
+            brush.DrawStroke(canvas, renderer, previousIRX, previousIRY, x, y);
         }
         else
         {
-            // First frame of detection:
-            // draw a point by using the same position twice.
-            brush.DrawStroke(
-                canvas,
-                renderer,
-                x,
-                y,
-                x,
-                y
-            );
+            // If this is the first detected IR point, just draw a single point.
+            brush.DrawStroke(canvas, renderer, x, y, x, y);
         }
 
         previousIRX = x;
@@ -130,9 +99,7 @@ void Application::Update()
     }
     else
     {
-        // The IR source disappeared.
-        // The next detected point should start a new stroke
-        // instead of drawing a line from the old position.
+        // No IR point detected, reset previous position.
         static bool previousIRValid = false;
         previousIRValid = false;
     }

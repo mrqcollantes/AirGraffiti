@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cstdio>
 
+// The WiiMote class encapsulates the functionality of a Nintendo Wii Remote using the Wiiuse library.
+
 WiiMote::WiiMote()
 {
     initialized = false;
@@ -193,12 +195,7 @@ void WiiMote::ProcessIRData()
         // Debug output
         std::printf(
             "\r[IR] X: %7.1f  Y: %7.1f  Raw: (%4d, %4d)  Points: %d   ",
-            irPoint.x,
-            irPoint.y,
-            irPoint.rawX,
-            irPoint.rawY,
-            visiblePointCount
-        );
+            irPoint.x, irPoint.y, irPoint.rawX, irPoint.rawY, visiblePointCount);
 
         std::fflush(stdout);
 

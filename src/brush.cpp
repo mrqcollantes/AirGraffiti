@@ -4,6 +4,9 @@
 
 #include <cmath>
 
+// The Brush class represents a simple drawing tool that can
+// draw strokes on a Canvas using a specified color and size.
+
 Brush::Brush()
 {
     color = {0, 0, 0, 255}; // Black
@@ -43,11 +46,7 @@ void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
         {
             if ((px * px) + (py * py) <= radius * radius)
             {
-                canvas.DrawPoint(
-                    renderer,
-                    x + px,
-                    y + py,
-                    color);
+                canvas.DrawPoint(renderer, x + px, y + py, color);
             }
         }
     }
@@ -58,8 +57,7 @@ void Brush::DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x
     int dx = x2 - x1;
     int dy = y2 - y1;
 
-    float distance = std::sqrt(
-        static_cast<float>(dx * dx + dy * dy));
+    float distance = std::sqrt(static_cast<float>(dx * dx + dy * dy));
 
     canvas.BeginDraw(renderer);
 
@@ -76,11 +74,7 @@ void Brush::DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x
 
         for (int i = 0; i <= static_cast<int>(distance); i++)
         {
-            DrawCircle(
-                canvas,
-                renderer,
-                static_cast<int>(currentX),
-                static_cast<int>(currentY));
+            DrawCircle(canvas, renderer, static_cast<int>(currentX), static_cast<int>(currentY));
 
             currentX += stepX;
             currentY += stepY;

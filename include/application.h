@@ -17,15 +17,19 @@ class Application
         void Shutdown();
     private:
         bool running;
+
         Renderer renderer;
         Canvas canvas;
         Brush brush;
         InputManager input;
         UI ui;
         WiiMote wiimote;
+
+        // Previous IR point state for drawing lines between points
         bool previousIRValid = false;
         int previousIRX = 0;
         int previousIRY = 0;
+
         void Update();
         void Render();
 };

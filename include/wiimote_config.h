@@ -1,12 +1,5 @@
 #pragma once
 
-// ============================================================
-// AirGraffiti - Wii Remote Configuration
-//
-// This is the ONLY file intended for values that may need to
-// change when testing the IR spray cans.
-// ============================================================
-
 namespace WiiMoteConfig
 {
     constexpr int MAX_WIIMOTES = 1;

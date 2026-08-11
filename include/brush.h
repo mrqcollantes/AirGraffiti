@@ -10,27 +10,16 @@ class Brush
 public:
     Brush();
 
-    // Draw a stroke from one point to another
-    void DrawStroke(Canvas& canvas,
-                    Renderer& renderer,
-                    int x1,
-                    int y1,
-                    int x2,
-                    int y2);
+    void DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x2, int y2);
 
-    // Settings
     void SetColor(SDL_Color newColor);
     void SetSize(int newSize);
 
     SDL_Color GetColor() const;
     int GetSize() const;
-
 private:
     SDL_Color color;
     int size;
 
-    void DrawCircle(Canvas& canvas,
-                    Renderer& renderer,
-                    int x,
-                    int y);
+    void DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y);
 };

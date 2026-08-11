@@ -1,5 +1,8 @@
 #include "renderer.h"
 
+// The Renderer class encapsulates SDL rendering functionality, including window and renderer management,
+// frame rendering, and drawing primitives like points and lines.
+
 Renderer::Renderer()
 {
     window = nullptr;
