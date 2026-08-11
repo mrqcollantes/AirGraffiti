@@ -11,7 +11,6 @@ public:
     Brush();
 
     void DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x2, int y2);
-
     void SetColor(SDL_Color newColor);
     void SetSize(int newSize);
 

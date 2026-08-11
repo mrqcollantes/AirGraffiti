@@ -24,6 +24,7 @@ bool Canvas::Create(Renderer& renderer, int width, int height)
     this->width = width;
     this->height = height;
 
+    // Create an off-screen texture to serve as the canvas
     texture = SDL_CreateTexture(
         renderer.GetSDLRenderer(),
         SDL_PIXELFORMAT_RGBA8888,
@@ -39,6 +40,7 @@ bool Canvas::Create(Renderer& renderer, int width, int height)
     return true;
 }
 
+// Clears the canvas by filling it with a white background.
 void Canvas::Clear(Renderer& renderer)
 {
     SDL_SetRenderTarget(renderer.GetSDLRenderer(), texture);

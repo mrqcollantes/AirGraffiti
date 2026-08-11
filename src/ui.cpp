@@ -2,13 +2,9 @@
 #include "renderer.h"
 #include "brush.h"
 #include "canvas.h"
-
 #include "imgui.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
-
-// The UI class manages the ImGui user interface, including
-// initialization, frame management, and rendering of UI elements.
 
 UI::UI(){}
 
@@ -21,7 +17,10 @@ bool UI::Init(Renderer& renderer)
     sdlRenderer = renderer.GetSDLRenderer();
 
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
+
+    // No ini file: the panel is pinned every frame anyway, and we don't
+    // want a collapsed state from a previous run to persist.
+    io.IniFilename = nullptr;
 
     ImGui::StyleColorsDark();
 
@@ -51,9 +50,20 @@ void UI::BeginFrame()
 
 void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
 {
-    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(260, 160), ImGuiCond_FirstUseEver);
-    ImGui::Begin("AirGraffiti");
+    // Use io.DisplaySize, not Renderer::GetWindowSize() - it's the
+    // exact space ImGui renders into, so the panel stays lined up.
+    ImGuiIO& io = ImGui::GetIO();
+    float windowWidth = io.DisplaySize.x;
+    float windowHeight = io.DisplaySize.y;
+
+    const float panelHeight = PANEL_HEIGHT;
+
+    // Pin the panel to the bottom of the window, and make it the full width of the window.
+    ImGui::SetNextWindowPos(ImVec2(0, windowHeight), ImGuiCond_Always, ImVec2(0, 1));
+    ImGui::SetNextWindowSize(ImVec2(windowWidth, panelHeight), ImGuiCond_Always);
+
+    ImGuiWindowFlags panelFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+    ImGui::Begin("AirGraffiti", nullptr, panelFlags);
 
     // Color picker
     SDL_Color current = brush.GetColor();
@@ -65,8 +75,7 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
             static_cast<Uint8>(colorArr[0] * 255.0f),
             static_cast<Uint8>(colorArr[1] * 255.0f),
             static_cast<Uint8>(colorArr[2] * 255.0f),
-            static_cast<Uint8>(colorArr[3] * 255.0f)
-        };
+            static_cast<Uint8>(colorArr[3] * 255.0f)};
         brush.SetColor(newColor);
     }
 
@@ -86,6 +95,28 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
     }
 
     ImGui::End();
+}
+
+void UI::SubmitPointerPosition(float windowX, float windowY)
+{
+    ImGui::GetIO().AddMousePosEvent(windowX, windowY);
+}
+
+void UI::SubmitPointerButton(bool pressed)
+{
+    ImGui::GetIO().AddMouseButtonEvent(ImGuiMouseButton_Left, pressed);
+}
+
+bool UI::WantsPointerCapture() const
+{
+    return ImGui::GetIO().WantCaptureMouse;
+}
+
+void UI::GetDisplaySize(float& outWidth, float& outHeight) const
+{
+    ImGuiIO& io = ImGui::GetIO();
+    outWidth = io.DisplaySize.x;
+    outHeight = io.DisplaySize.y;
 }
 
 void UI::EndFrame()
