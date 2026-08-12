@@ -420,7 +420,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\pointer.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\renderer.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\ui.cpp" />
-    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimote.cpp" />
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimotemanager.cpp" />
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimotecalibration.cpp" />
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\irfusion.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui_draw.cpp" />
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui_tables.cpp" />

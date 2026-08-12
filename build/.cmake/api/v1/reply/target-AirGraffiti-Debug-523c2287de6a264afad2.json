@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Release/AirGraffiti.exe"
+			"path" : "Debug/AirGraffiti.exe"
 		},
 		{
-			"path" : "Release/AirGraffiti.pdb"
+			"path" : "Debug/AirGraffiti.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -31,19 +31,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 53,
+				"line" : 25,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 160,
+				"line" : 75,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 176,
+				"line" : 81,
 				"parent" : 0
 			},
 			{
@@ -58,13 +58,13 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 125,
+				"line" : 59,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 102,
+				"line" : 51,
 				"parent" : 0
 			}
 		]
@@ -87,7 +87,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd"
 				}
 			],
 			"defines" : 
@@ -146,7 +146,9 @@
 				12,
 				13,
 				14,
-				15
+				15,
+				16,
+				17
 			]
 		}
 	],
@@ -166,11 +168,11 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO",
+				"fragment" : "/machine:x64 /debug /INCREMENTAL",
 				"role" : "flags"
 			},
 			{
@@ -184,7 +186,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "wiiuse\\src\\Release\\wiiuse.lib",
+				"fragment" : "wiiuse\\src\\Debug\\wiiuse_debug.lib",
 				"role" : "libraries"
 			},
 			{
@@ -271,7 +273,9 @@
 				12,
 				13,
 				14,
-				15
+				15,
+				16,
+				17
 			]
 		}
 	],
@@ -328,7 +332,19 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/wiimote.cpp",
+			"path" : "src/wiimotemanager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/wiimotecalibration.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/irfusion.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

@@ -1,35 +1,40 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+
 #include "renderer.h"
 #include "canvas.h"
 #include "brush.h"
 #include "inputmanager.h"
 #include "ui.h"
-#include "wiimote.h"
+#include "wiimotemanager.h"
 
 class Application
 {
-    public:
-        Application();
-        bool Init();
-        void Run();
-        void Shutdown();
-    private:
-        bool running;
+public:
+    Application();
 
-        Renderer renderer;
-        Canvas canvas;
-        Brush brush;
-        InputManager input;
-        UI ui;
-        WiiMote wiimote;
+    bool Init();
+    void Run();
+    void Shutdown();
 
-        // Previous IR point state for drawing lines between points
-        bool previousIRValid = false;
-        int previousIRX = 0;
-        int previousIRY = 0;
+private:
+    bool running = false;
 
-        void Update();
-        void Render();
+    Renderer renderer;
+    Canvas canvas;
+    Brush brush;
+    InputManager input;
+    UI ui;
+    WiiMoteManager wiimoteManager;
+
+    bool previousIRValid = false;
+    int previousIRX = 0;
+    int previousIRY = 0;
+
+    bool irWasActive = false;
+    bool wasOverUI = false;
+
+    void Update();
+    void Render();
 };

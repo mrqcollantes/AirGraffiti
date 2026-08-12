@@ -25,7 +25,13 @@
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimote.cpp">
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimotemanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\wiimotecalibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\src\irfusion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\mcollant\Documents\AirGraffiti\external\imgui\imgui.cpp">
