@@ -6,7 +6,8 @@
 #include "wiimote_config.h"
 #include "wiimotecalibration.h"
 #include "irfusion.h"
-#include "wiimote.h"
+
+struct wiimote_t;
 
 struct WiiMoteRemoteState
 {

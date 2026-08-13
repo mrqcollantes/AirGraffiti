@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Release/AirGraffiti.exe"
+			"path" : "RelWithDebInfo/AirGraffiti.exe"
 		},
 		{
-			"path" : "Release/AirGraffiti.pdb"
+			"path" : "RelWithDebInfo/AirGraffiti.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -37,13 +37,13 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 75,
+				"line" : 73,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 81,
+				"line" : 79,
 				"parent" : 0
 			},
 			{
@@ -58,13 +58,13 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 59,
+				"line" : 57,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 51,
+				"line" : 49,
 				"parent" : 0
 			}
 		]
@@ -87,7 +87,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD"
+					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /O2 /Ob1 /DNDEBUG -std:c++17 -MD"
 				}
 			],
 			"defines" : 
@@ -168,11 +168,11 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /O2 /Ob1 /DNDEBUG -MD",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO",
+				"fragment" : "/machine:x64 /debug /INCREMENTAL",
 				"role" : "flags"
 			},
 			{
@@ -186,7 +186,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "wiiuse\\src\\Release\\wiiuse.lib",
+				"fragment" : "wiiuse\\src\\RelWithDebInfo\\wiiuse.lib",
 				"role" : "libraries"
 			},
 			{

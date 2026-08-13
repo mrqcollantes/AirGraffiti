@@ -2,6 +2,8 @@
 
 AirGraffiti is a C++ application that uses Wii Remotes and the [Wiiuse](https://github.com/wiiuse/wiiuse) library to track infrared (IR) emitters and translate their positions into a virtual pointer for an LED display. The system is designed to support multiple Wii Remotes for larger displays and flexible sensor placement.
 
+**SDL3** provides the foundation for the application, handling the window, rendering, and input needed to run AirGraffiti. **Dear ImGui** provides the graphical user interface, including the controls for brush size, colors, tools, and canvas interaction. It is integrated with SDL3 to display the interface within the application.
+
 ## Architecture
 
 The application is organized into several main components:

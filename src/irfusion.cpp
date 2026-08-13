@@ -1,5 +1,5 @@
 #include "irfusion.h"
-#include "wiimote.h"
+#include "wiimotecalibration.h"
 
 // The AverageFusion class implements a simple averaging algorithm to
 // fuse multiple WiiMoteIRPoint observations into a single FusedPoint.

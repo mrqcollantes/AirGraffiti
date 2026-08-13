@@ -2,7 +2,17 @@
 
 #include <cstddef>
 #include <vector>
-#include "wiimote.h"
+
+struct WiiMoteIRPoint
+{
+    bool visible = false;
+
+    int rawX = 0;
+    int rawY = 0;
+
+    float x = 0.0f;
+    float y = 0.0f;
+};
 
 struct WiiMoteCalibrationProfile
 {

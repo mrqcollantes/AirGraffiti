@@ -80,10 +80,15 @@ void WiiMoteManager::ConfigureRemote(wiimote_t* remote)
     if (!remote)
         return;
 
+    std::printf("[IR CONFIG] Configuring remote %p\n", static_cast<void*>(remote));
+        
     wiiuse_set_ir(remote, 1);
     wiiuse_set_ir_vres(remote, WiiMoteConfig::OUTPUT_WIDTH, WiiMoteConfig::OUTPUT_HEIGHT);
     wiiuse_set_ir_sensitivity(remote, WiiMoteConfig::IR_SENSITIVITY);
     wiiuse_set_aspect_ratio(remote, WIIUSE_ASPECT_16_9);
+
+    std::printf("[IR CONFIG] Remote %p IR configuration sent\n", static_cast<void*>(remote));
+
 }
 
 void WiiMoteManager::Update()
@@ -91,9 +96,7 @@ void WiiMoteManager::Update()
     if (!initialized || !wiimotes)
         return;
 
-    if (!wiiuse_poll(
-            wiimotes,
-            static_cast<int>(remoteCount)))
+    if (!wiiuse_poll(wiimotes,static_cast<int>(remoteCount)))
     {
         return;
     }
@@ -121,6 +124,13 @@ void WiiMoteManager::Update()
         if (state.connected && state.irActive)
             observations.push_back(state.calibratedIR);
     }
+
+    std::printf(
+        "[Fusion] Observations: %zu | Remote 0: %s | Remote 1: %s\n",
+        observations.size(),
+        states.size() > 0 && states[0].irActive ? "ACTIVE" : "INACTIVE",
+        states.size() > 1 && states[1].irActive ? "ACTIVE" : "INACTIVE"
+    );
 
     fusedPoint = fusion.Fuse(observations);
 }
@@ -157,6 +167,27 @@ void WiiMoteManager::ProcessRemote(std::size_t index, wiimote_t* remote)
 
         ++state.visiblePointCount;
     }
+
+    std::printf(
+        "[IR RAW] Remote %zu | "
+        "D0 V=%d X=%d Y=%d | "
+        "D1 V=%d X=%d Y=%d | "
+        "D2 V=%d X=%d Y=%d | "
+        "D3 V=%d X=%d Y=%d\n",
+        index,
+        remote->ir.dot[0].visible,
+        remote->ir.dot[0].rx,
+        remote->ir.dot[0].ry,
+        remote->ir.dot[1].visible,
+        remote->ir.dot[1].rx,
+        remote->ir.dot[1].ry,
+        remote->ir.dot[2].visible,
+        remote->ir.dot[2].rx,
+        remote->ir.dot[2].ry,
+        remote->ir.dot[3].visible,
+        remote->ir.dot[3].rx,
+        remote->ir.dot[3].ry
+    );
 
     if (state.visiblePointCount < WiiMoteConfig::MIN_VISIBLE_POINTS)
         return;

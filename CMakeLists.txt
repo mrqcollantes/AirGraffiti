@@ -32,8 +32,6 @@ add_executable(AirGraffiti
     src/pointer.cpp
     src/renderer.cpp
     src/ui.cpp
-
-    # Multi-remote Wii Remote architecture
     src/wiimotemanager.cpp
     src/wiimotecalibration.cpp
     src/irfusion.cpp
