@@ -6,11 +6,13 @@
 
 // The Brush class represents a simple drawing tool that can
 // draw strokes on a Canvas using a specified color and size.
+// In Eraser mode, the brush draws white to match the canvas background.
 
 Brush::Brush()
 {
     color = {0, 0, 0, 255}; // Black
-    size = 8;
+    size = 16;
+    mode = Mode::Spray;
 }
 
 void Brush::SetColor(SDL_Color newColor)
@@ -26,6 +28,11 @@ void Brush::SetSize(int newSize)
     size = newSize;
 }
 
+void Brush::SetMode(Mode newMode)
+{
+    mode = newMode;
+}
+
 SDL_Color Brush::GetColor() const
 {
     return color;
@@ -36,9 +43,23 @@ int Brush::GetSize() const
     return size;
 }
 
+Brush::Mode Brush::GetMode() const
+{
+    return mode;
+}
+
 void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
 {
     int radius = size / 2;
+
+    // The canvas currently has a white background, so erasing is
+    // implemented by drawing white over the existing artwork.
+    SDL_Color drawColor = color;
+
+    if (mode == Mode::Eraser)
+    {
+        drawColor = {255, 255, 255, 255};
+    }
 
     for (int py = -radius; py <= radius; py++)
     {
@@ -46,7 +67,7 @@ void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
         {
             if ((px * px) + (py * py) <= radius * radius)
             {
-                canvas.DrawPoint(renderer, x + px, y + py, color);
+                canvas.DrawPoint(renderer, x + px, y + py, drawColor);
             }
         }
     }
@@ -80,5 +101,6 @@ void Brush::DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x
             currentY += stepY;
         }
     }
+
     canvas.EndDraw(renderer);
 }

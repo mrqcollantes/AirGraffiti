@@ -3,6 +3,7 @@
 struct wiimote_t;
 
 // Represents one raw IR point detected by the Wii Remote.
+
 struct WiiMoteIRPoint
 {
     bool visible = false;

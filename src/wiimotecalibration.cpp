@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <vector>
 
+// The WiiMoteCalibration class manages calibration profiles for multiple Wii Remotes,
+// allowing for scaling and offset adjustments to raw IR points.
+
 WiiMoteCalibration::WiiMoteCalibration(std::size_t remoteCount)
 {
     Resize(remoteCount);
@@ -72,15 +75,8 @@ WiiMoteIRPoint WiiMoteCalibration::Apply(
     result.x = rawPoint.x * profile.scaleX + profile.offsetX;
     result.y = rawPoint.y * profile.scaleY + profile.offsetY;
 
-    result.x = std::clamp(
-        result.x,
-        0.0f,
-        static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH - 1));
-
-    result.y = std::clamp(
-        result.y,
-        0.0f,
-        static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT - 1));
+    result.x = std::clamp(result.x, 0.0f, static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH - 1));
+    result.y = std::clamp(result.y, 0.0f, static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT - 1));
 
     return result;
 }

@@ -27,12 +27,7 @@ bool Renderer::Init(const std::string& title, int width, int height)
         return false;
     }
 
-    window = SDL_CreateWindow(
-        title.c_str(),
-        width,
-        height,
-        SDL_WINDOW_RESIZABLE
-    );
+    window = SDL_CreateWindow(title.c_str(), width, height, SDL_WINDOW_RESIZABLE);
 
     if (!window)
     {
@@ -41,10 +36,7 @@ bool Renderer::Init(const std::string& title, int width, int height)
         return false;
     }
 
-    renderer = SDL_CreateRenderer(
-        window,
-        nullptr
-    );
+    renderer = SDL_CreateRenderer(window, nullptr);
 
     if (!renderer)
     {

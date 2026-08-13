@@ -28,9 +28,7 @@ bool WiiMote::Init()
     std::printf("[WiiMote] Initializing...\n");
 
     // Allocate Wiiuse structures
-    wiimotes = wiiuse_init(
-        WiiMoteConfig::MAX_WIIMOTES
-    );
+    wiimotes = wiiuse_init(WiiMoteConfig::MAX_WIIMOTES);
 
     if (!wiimotes)
     {
@@ -129,7 +127,7 @@ void WiiMote::ProcessIRData()
     static bool wasDetecting = false;
 
     ResetIRData();
-
+    
     if (!wiimotes)
         return;
 

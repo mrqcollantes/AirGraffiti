@@ -15,25 +15,23 @@ struct WiiMoteCalibrationProfile
 
 class WiiMoteCalibration
 {
-public:
-    explicit WiiMoteCalibration(std::size_t remoteCount = 0);
+    public:
+        explicit WiiMoteCalibration(std::size_t remoteCount = 0);
 
-    void Resize(std::size_t remoteCount);
-    std::size_t Size() const;
+        void Resize(std::size_t remoteCount);
+        std::size_t Size() const;
 
-    void Reset(std::size_t remoteIndex);
-    void ResetAll();
+        void Reset(std::size_t remoteIndex);
+        void ResetAll();
 
-    bool IsCalibrated(std::size_t remoteIndex) const;
+        bool IsCalibrated(std::size_t remoteIndex) const;
 
-    const WiiMoteCalibrationProfile& GetProfile(std::size_t remoteIndex) const;
-    void SetProfile(std::size_t remoteIndex,
-                    const WiiMoteCalibrationProfile& profile);
+        const WiiMoteCalibrationProfile& GetProfile(std::size_t remoteIndex) const;
+        void SetProfile(std::size_t remoteIndex, const WiiMoteCalibrationProfile& profile);
 
-    // Applies the profile belonging to this remote.
-    WiiMoteIRPoint Apply(std::size_t remoteIndex,
-                         const WiiMoteIRPoint& rawPoint) const;
+        // Applies the profile belonging to this remote.
+        WiiMoteIRPoint Apply(std::size_t remoteIndex, const WiiMoteIRPoint& rawPoint) const;
 
-private:
-    std::vector<WiiMoteCalibrationProfile> profiles;
+    private:
+        std::vector<WiiMoteCalibrationProfile> profiles;
 };

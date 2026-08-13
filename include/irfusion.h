@@ -15,16 +15,13 @@ struct FusedPoint
 
 class IRFusion
 {
-public:
-    virtual ~IRFusion() = default;
-
-    virtual FusedPoint Fuse(
-        const std::vector<WiiMoteIRPoint>& observations) const = 0;
+    public:
+        virtual ~IRFusion() = default;
+        virtual FusedPoint Fuse(const std::vector<WiiMoteIRPoint>& observations) const = 0;
 };
 
 class AverageFusion final : public IRFusion
 {
-public:
-    FusedPoint Fuse(
-        const std::vector<WiiMoteIRPoint>& observations) const override;
+    public:
+        FusedPoint Fuse(const std::vector<WiiMoteIRPoint>& observations) const override;
 };

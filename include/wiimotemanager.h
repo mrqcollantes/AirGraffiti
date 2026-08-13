@@ -22,45 +22,44 @@ struct WiiMoteRemoteState
 
 class WiiMoteManager
 {
-public:
-    explicit WiiMoteManager(
-        std::size_t remoteCount = WiiMoteConfig::DEFAULT_WIIMOTE_COUNT);
-    ~WiiMoteManager();
+    public:
+        explicit WiiMoteManager(std::size_t remoteCount = WiiMoteConfig::DEFAULT_WIIMOTE_COUNT);
+        ~WiiMoteManager();
 
-    bool Init();
-    void Update();
-    void Shutdown();
+        bool Init();
+        void Update();
+        void Shutdown();
 
-    bool SetRemoteCount(std::size_t remoteCount);
-    std::size_t GetRemoteCount() const;
-    std::size_t GetConnectedCount() const;
+        bool SetRemoteCount(std::size_t remoteCount);
+        std::size_t GetRemoteCount() const;
+        std::size_t GetConnectedCount() const;
 
-    bool IsInitialized() const;
+        bool IsInitialized() const;
 
-    const WiiMoteRemoteState& GetRemoteState(std::size_t remoteIndex) const;
-    const std::vector<WiiMoteRemoteState>& GetRemoteStates() const;
+        const WiiMoteRemoteState& GetRemoteState(std::size_t remoteIndex) const;
+        const std::vector<WiiMoteRemoteState>& GetRemoteStates() const;
 
-    const FusedPoint& GetFusedPoint() const;
+        const FusedPoint& GetFusedPoint() const;
 
-    WiiMoteCalibration& GetCalibration();
-    const WiiMoteCalibration& GetCalibration() const;
+        WiiMoteCalibration& GetCalibration();
+        const WiiMoteCalibration& GetCalibration() const;
 
-private:
-    bool ConnectRemotes();
-    void ConfigureRemote(wiimote_t* remote);
-    void ResetStates();
-    void ProcessRemote(std::size_t index, wiimote_t* remote);
+    private:
+        bool ConnectRemotes();
+        void ConfigureRemote(wiimote_t* remote);
+        void ResetStates();
+        void ProcessRemote(std::size_t index, wiimote_t* remote);
 
-    std::size_t remoteCount;
-    bool initialized = false;
+        std::size_t remoteCount;
+        bool initialized = false;
 
-    wiimote_t** wiimotes = nullptr;
+        wiimote_t** wiimotes = nullptr;
 
-    std::vector<WiiMoteRemoteState> states;
-    WiiMoteCalibration calibration;
-    AverageFusion fusion;
-    FusedPoint fusedPoint;
+        std::vector<WiiMoteRemoteState> states;
+        WiiMoteCalibration calibration;
+        AverageFusion fusion;
+        FusedPoint fusedPoint;
 
-    WiiMoteManager(const WiiMoteManager&) = delete;
-    WiiMoteManager& operator=(const WiiMoteManager&) = delete;
+        WiiMoteManager(const WiiMoteManager&) = delete;
+        WiiMoteManager& operator=(const WiiMoteManager&) = delete;
 };

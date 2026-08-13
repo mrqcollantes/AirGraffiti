@@ -1,8 +1,10 @@
 #include "irfusion.h"
 #include "wiimote.h"
 
-FusedPoint AverageFusion::Fuse(
-    const std::vector<WiiMoteIRPoint>& observations) const
+// The AverageFusion class implements a simple averaging algorithm to
+// fuse multiple WiiMoteIRPoint observations into a single FusedPoint.
+
+FusedPoint AverageFusion::Fuse(const std::vector<WiiMoteIRPoint>& observations) const
 {
     FusedPoint result;
 
@@ -23,10 +25,8 @@ FusedPoint AverageFusion::Fuse(
         return result;
 
     result.valid = true;
-    result.x = static_cast<float>(
-        sumX / static_cast<double>(result.contributingRemotes));
-    result.y = static_cast<float>(
-        sumY / static_cast<double>(result.contributingRemotes));
+    result.x = static_cast<float>(sumX / static_cast<double>(result.contributingRemotes));
+    result.y = static_cast<float>(sumY / static_cast<double>(result.contributingRemotes));
 
     return result;
 }

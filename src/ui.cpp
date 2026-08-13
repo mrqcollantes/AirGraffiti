@@ -50,46 +50,185 @@ void UI::BeginFrame()
 
 void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
 {
-    // Use io.DisplaySize, not Renderer::GetWindowSize() - it's the
-    // exact space ImGui renders into, so the panel stays lined up.
     ImGuiIO& io = ImGui::GetIO();
+
     float windowWidth = io.DisplaySize.x;
     float windowHeight = io.DisplaySize.y;
 
     const float panelHeight = PANEL_HEIGHT;
 
-    // Pin the panel to the bottom of the window, and make it the full width of the window.
+    // Pin the panel to the bottom of the window and make it full width.
     ImGui::SetNextWindowPos(ImVec2(0, windowHeight), ImGuiCond_Always, ImVec2(0, 1));
+
     ImGui::SetNextWindowSize(ImVec2(windowWidth, panelHeight), ImGuiCond_Always);
 
-    ImGuiWindowFlags panelFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags panelFlags =
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoCollapse;
+
     ImGui::Begin("AirGraffiti", nullptr, panelFlags);
 
-    // Color picker
-    SDL_Color current = brush.GetColor();
-    float colorArr[4] = {current.r / 255.0f, current.g / 255.0f, current.b / 255.0f, current.a / 255.0f};
+    // SIZE
+    ImGui::Text("SIZE");
+    ImGui::SameLine();
 
-    if (ImGui::ColorEdit4("Color", colorArr))
+    struct BrushSizeOption
     {
-        SDL_Color newColor = {
-            static_cast<Uint8>(colorArr[0] * 255.0f),
-            static_cast<Uint8>(colorArr[1] * 255.0f),
-            static_cast<Uint8>(colorArr[2] * 255.0f),
-            static_cast<Uint8>(colorArr[3] * 255.0f)};
-        brush.SetColor(newColor);
+        const char* label;
+        int size;
+    };
+
+    const BrushSizeOption sizes[] =
+    {
+        {"SMALL",  8},
+        {"MEDIUM", 16},
+        {"LARGE",  32},
+        {"XL",     64}
+    };
+
+    for (const auto& option : sizes)
+    {
+        bool selected = (brush.GetSize() == option.size);
+
+        if (selected)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button,ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+        }
+
+        if (ImGui::Button(option.label, ImVec2(125.0f, 50.0f)))
+        {
+            brush.SetSize(option.size);
+        }
+
+        if (selected)
+        {
+            ImGui::PopStyleColor();
+        }
+
+        ImGui::SameLine();
     }
 
-    // Brush size
-    int size = brush.GetSize();
-    if (ImGui::SliderInt("Brush Size", &size, 1, 64))
+    // Space between SIZE and COLOR
+    ImGui::Dummy(ImVec2(15.0f, 0.0f));
+    ImGui::SameLine();
+
+    // COLOR
+    ImGui::Text("COLOR");
+    ImGui::SameLine();
+
+    struct ColorOption
     {
-        brush.SetSize(size);
+        const char* id;
+        SDL_Color color;
+    };
+
+    const ColorOption colors[] =
+    {
+        {"##color_black",  {0,   0,   0,   255}},
+        {"##color_white",  {255, 255, 255, 255}},
+        {"##color_red",    {255, 0,   0,   255}},
+        {"##color_orange", {255, 128, 0,   255}},
+        {"##color_yellow", {255, 220, 0,   255}},
+        {"##color_green",  {0,   200, 70,  255}},
+        {"##color_cyan",   {0,   210, 255, 255}},
+        {"##color_blue",   {30,  100, 255, 255}},
+        {"##color_purple", {150, 60,  255, 255}},
+        {"##color_pink",   {255, 60, 170, 255}}
+    };
+
+    SDL_Color currentColor = brush.GetColor();
+
+    for (const auto& option : colors)
+    {
+        bool selected =
+            currentColor.r == option.color.r &&
+            currentColor.g == option.color.g &&
+            currentColor.b == option.color.b &&
+            currentColor.a == option.color.a;
+
+        ImVec4 colorVec(
+            option.color.r / 255.0f,
+            option.color.g / 255.0f,
+            option.color.b / 255.0f,
+            option.color.a / 255.0f
+        );
+
+        if (selected)
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        }
+        else
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f );
+        }
+
+        if (ImGui::ColorButton(option.id, colorVec,
+            ImGuiColorEditFlags_NoPicker |
+            ImGuiColorEditFlags_NoTooltip,
+            ImVec2(50.0f, 50.0f)))
+        {
+            brush.SetColor(option.color);
+            brush.SetMode(Brush::Mode::Spray);
+        }
+
+        ImGui::PopStyleVar();
+
+        if (selected)
+        {
+            ImGui::PopStyleColor();
+        }
+
+        ImGui::SameLine();
     }
 
-    ImGui::Separator();
+    // Space between COLOR and TOOL
+    ImGui::Dummy(ImVec2(15.0f, 0.0f));
+    ImGui::SameLine();
 
-    // Clear canvas
-    if (ImGui::Button("Clear Canvas"))
+    // TOOL
+    ImGui::Text("TOOL");
+    ImGui::SameLine();
+
+    bool spraySelected = brush.GetMode() == Brush::Mode::Spray;
+    bool eraserSelected = brush.GetMode() == Brush::Mode::Eraser;
+
+    if (spraySelected)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+    }
+
+    if (ImGui::Button("SPRAY", ImVec2(175.0f, 50.0f)))
+    {
+        brush.SetMode(Brush::Mode::Spray);
+    }
+
+    if (spraySelected)
+    {
+        ImGui::PopStyleColor();
+    }
+
+    ImGui::SameLine();
+
+    if (eraserSelected)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button,ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+    }
+
+    if (ImGui::Button("ERASER", ImVec2(175.0f, 50.0f)))
+    {
+        brush.SetMode(Brush::Mode::Eraser);
+    }
+
+    if (eraserSelected)
+    {
+        ImGui::PopStyleColor();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("CLEAR CANVAS", ImVec2(175.0f, 50.0f)))
     {
         canvas.Clear(renderer);
     }

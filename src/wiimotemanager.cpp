@@ -6,10 +6,11 @@
 
 #include <wiiuse.h>
 
+// The WiiMoteManager class manages multiple Wii Remotes,
+// handling their initialization, updates, and calibration.
+
 WiiMoteManager::WiiMoteManager(std::size_t count)
-    : remoteCount(std::clamp<std::size_t>(
-          count, 1, WiiMoteConfig::MAX_WIIMOTES)),
-      calibration(remoteCount)
+    : remoteCount(std::clamp<std::size_t>(count, 1, WiiMoteConfig::MAX_WIIMOTES)),calibration(remoteCount)
 {
     states.resize(remoteCount);
 }
@@ -24,9 +25,7 @@ bool WiiMoteManager::Init()
     if (initialized)
         return true;
 
-    std::printf(
-        "[WiiMoteManager] Initializing for %zu remote(s)...\n",
-        remoteCount);
+    std::printf("[WiiMoteManager] Initializing for %zu remote(s)...\n", remoteCount);
 
     wiimotes = wiiuse_init(WiiMoteConfig::MAX_WIIMOTES);
 
@@ -44,14 +43,9 @@ bool WiiMoteManager::ConnectRemotes()
 {
     ResetStates();
 
-    std::printf(
-        "[WiiMoteManager] Searching for up to %zu remote(s)...\n",
-        remoteCount);
+    std::printf("[WiiMoteManager] Searching for up to %zu remote(s)...\n", remoteCount);
 
-    const int found = wiiuse_find(
-        wiimotes,
-        static_cast<int>(remoteCount),
-        5);
+    const int found = wiiuse_find(wiimotes, static_cast<int>(remoteCount), 5);
 
     if (found <= 0)
     {
@@ -75,9 +69,7 @@ bool WiiMoteManager::ConnectRemotes()
         states[i].connected = true;
         ConfigureRemote(wiimotes[i]);
 
-        std::printf(
-            "[WiiMoteManager] Remote %d connected.\n",
-            i);
+        std::printf("[WiiMoteManager] Remote %d connected.\n", i);
     }
 
     return true;
@@ -89,16 +81,9 @@ void WiiMoteManager::ConfigureRemote(wiimote_t* remote)
         return;
 
     wiiuse_set_ir(remote, 1);
-    wiiuse_set_ir_vres(
-        remote,
-        WiiMoteConfig::OUTPUT_WIDTH,
-        WiiMoteConfig::OUTPUT_HEIGHT);
-    wiiuse_set_ir_sensitivity(
-        remote,
-        WiiMoteConfig::IR_SENSITIVITY);
-    wiiuse_set_aspect_ratio(
-        remote,
-        WIIUSE_ASPECT_16_9);
+    wiiuse_set_ir_vres(remote, WiiMoteConfig::OUTPUT_WIDTH, WiiMoteConfig::OUTPUT_HEIGHT);
+    wiiuse_set_ir_sensitivity(remote, WiiMoteConfig::IR_SENSITIVITY);
+    wiiuse_set_aspect_ratio(remote, WIIUSE_ASPECT_16_9);
 }
 
 void WiiMoteManager::Update()
@@ -140,14 +125,11 @@ void WiiMoteManager::Update()
     fusedPoint = fusion.Fuse(observations);
 }
 
-void WiiMoteManager::ProcessRemote(
-    std::size_t index,
-    wiimote_t* remote)
+void WiiMoteManager::ProcessRemote(std::size_t index, wiimote_t* remote)
 {
     auto& state = states[index];
 
-    if (remote->event == WIIUSE_DISCONNECT ||
-        remote->event == WIIUSE_UNEXPECTED_DISCONNECT)
+    if (remote->event == WIIUSE_DISCONNECT || remote->event == WIIUSE_UNEXPECTED_DISCONNECT)
     {
         state.connected = false;
         state.irActive = false;
@@ -155,9 +137,7 @@ void WiiMoteManager::ProcessRemote(
         state.rawIR = {};
         state.calibratedIR = {};
 
-        std::printf(
-            "[WiiMoteManager] Remote %zu disconnected.\n",
-            index);
+        std::printf("[WiiMoteManager] Remote %zu disconnected.\n", index);
 
         return;
     }
@@ -193,24 +173,14 @@ void WiiMoteManager::ProcessRemote(
         raw.rawX = dot.rx;
         raw.rawY = dot.ry;
 
-        float normalizedX =
-            static_cast<float>(dot.rx) /
-            static_cast<float>(WiiMoteConfig::IR_WIDTH - 1);
-
-        float normalizedY =
-            static_cast<float>(dot.ry) /
-            static_cast<float>(WiiMoteConfig::IR_HEIGHT - 1);
+        float normalizedX = static_cast<float>(dot.rx) / static_cast<float>(WiiMoteConfig::IR_WIDTH - 1);
+        float normalizedY = static_cast<float>(dot.ry) / static_cast<float>(WiiMoteConfig::IR_HEIGHT - 1);
 
         normalizedX = std::clamp(normalizedX, 0.0f, 1.0f);
         normalizedY = std::clamp(normalizedY, 0.0f, 1.0f);
 
-        raw.x =
-            normalizedX *
-            static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH);
-
-        raw.y =
-            normalizedY *
-            static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT);
+        raw.x = normalizedX * static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH);
+        raw.y = normalizedY * static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT);
 
         state.rawIR = raw;
         state.calibratedIR = calibration.Apply(index, raw);
@@ -223,10 +193,7 @@ void WiiMoteManager::ProcessRemote(
 
 bool WiiMoteManager::SetRemoteCount(std::size_t count)
 {
-    count = std::clamp<std::size_t>(
-        count,
-        1,
-        WiiMoteConfig::MAX_WIIMOTES);
+    count = std::clamp<std::size_t>(count, 1, WiiMoteConfig::MAX_WIIMOTES);
 
     if (count == remoteCount)
         return true;
@@ -320,9 +287,7 @@ void WiiMoteManager::Shutdown()
                 wiiuse_disconnect(wiimotes[i]);
         }
 
-        wiiuse_cleanup(
-            wiimotes,
-            static_cast<int>(WiiMoteConfig::MAX_WIIMOTES));
+        wiiuse_cleanup(wiimotes, static_cast<int>(WiiMoteConfig::MAX_WIIMOTES));
 
         wiimotes = nullptr;
     }

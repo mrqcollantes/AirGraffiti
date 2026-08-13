@@ -29,8 +29,7 @@ bool Canvas::Create(Renderer& renderer, int width, int height)
         renderer.GetSDLRenderer(),
         SDL_PIXELFORMAT_RGBA8888,
         SDL_TEXTUREACCESS_TARGET,
-        width,
-        height);
+        width, height);
 
     if (!texture)
         return false;
@@ -55,7 +54,6 @@ void Canvas::Draw(Renderer& renderer)
 
     // Make sure we are rendering to the window
     SDL_SetRenderTarget(sdlRenderer, nullptr);
-
     SDL_RenderTexture(sdlRenderer, texture, nullptr, nullptr);
 }
 
@@ -79,9 +77,6 @@ void Canvas::DrawLine(Renderer& renderer, int x1, int y1, int x2, int y2, SDL_Co
 {
     SDL_SetRenderDrawColor(renderer.GetSDLRenderer(), color.r, color.g, color.b, color.a);
     SDL_RenderLine(renderer.GetSDLRenderer(),
-        static_cast<float>(x1),
-        static_cast<float>(y1),
-        static_cast<float>(x2),
-        static_cast<float>(y2)
-    );
+        static_cast<float>(x1), static_cast<float>(y1),
+        static_cast<float>(x2), static_cast<float>(y2));
 }

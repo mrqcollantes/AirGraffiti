@@ -11,30 +11,30 @@
 
 class Application
 {
-public:
-    Application();
+    public:
+        Application();
 
-    bool Init();
-    void Run();
-    void Shutdown();
+        bool Init();
+        void Run();
+        void Shutdown();
 
-private:
-    bool running = false;
+    private:
+        bool running = false;
 
-    Renderer renderer;
-    Canvas canvas;
-    Brush brush;
-    InputManager input;
-    UI ui;
-    WiiMoteManager wiimoteManager;
+        Renderer renderer;
+        Canvas canvas;
+        Brush brush;
+        InputManager input;
+        UI ui;
+        WiiMoteManager wiimoteManager;
 
-    bool previousIRValid = false;
-    int previousIRX = 0;
-    int previousIRY = 0;
+        bool previousIRValid = false;
+        int previousIRX = 0;
+        int previousIRY = 0;
 
-    bool irWasActive = false;
-    bool wasOverUI = false;
+        bool irWasActive = false;
+        bool isUIPress = false;
 
-    void Update();
-    void Render();
+        void Update();
+        void Render();
 };
