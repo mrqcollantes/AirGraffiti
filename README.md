@@ -31,7 +31,6 @@ The `src/` directory contains the main application source code:
 | `brush.cpp`              | Handles brush properties and drawing behavior.                                         |
 | `pointer.cpp`            | Represents and manages the virtual pointer position and state.                         |
 | `inputmanager.cpp`       | Processes keyboard and other application input.                                        |
-| `wiimote.cpp`            | Represents an individual Wii Remote and its tracking state.                            |
 | `wiimotemanager.cpp`     | Discovers, connects, and manages multiple Wii Remotes.                                 |
 | `wiimotecalibration.cpp` | Handles per-remote IR calibration and coordinate mapping.                              |
 | `irfusion.cpp`           | Combines valid IR tracking data from multiple remotes into a unified pointer position. |

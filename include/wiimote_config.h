@@ -2,30 +2,30 @@
 
 namespace WiiMoteConfig
 {
-    // Maximum number of remotes the application can manage.
+    // Maximum number of Wii Remotes supported by wiiuse.
+    // Current tracking method uses exactly two:
+    //   Remote 0 = TOP
+    //   Remote 1 = LEFT
     constexpr int MAX_WIIMOTES = 5;
 
-    // Number used by the application when no other count is selected.
-    constexpr int DEFAULT_WIIMOTE_COUNT = 2;
-
-    // Wiiuse raw IR coordinates.
+    // Wiiuse IR coordinate space.
     constexpr int IR_WIDTH = 1024;
     constexpr int IR_HEIGHT = 768;
 
     constexpr int IR_SENSITIVITY = 1;
 
+    // AirGraffiti canvas.
     constexpr int OUTPUT_WIDTH = 1280;
     constexpr int OUTPUT_HEIGHT = 720;
 
-    constexpr int MIN_VISIBLE_POINTS = 1;
+    // Number of consecutive frames the IR source must remain
+    // stable before a calibration point can be captured.
+    constexpr int CALIBRATION_STABLE_FRAMES = 20;
 
-    // Initial/default calibration. Individual profiles are owned by
-    // WiiMoteCalibration and indexed by remote.
-    constexpr float OFFSET_X = 0.0f;
-    constexpr float OFFSET_Y = 0.0f;
-    constexpr float SCALE_X = 1.0f;
-    constexpr float SCALE_Y = 1.0f;
+    // Maximum movement between consecutive calibration frames
+    // before the source is considered unstable.
+    constexpr float CALIBRATION_STABILITY_PIXELS = 12.0f;
 
-    constexpr int SIGNAL_THRESHOLD = 0;
-    constexpr bool ENABLE_DRAWING = false;
+    // Drawing remains disabled until calibration succeeds.
+    constexpr bool ENABLE_DRAWING = true;
 }

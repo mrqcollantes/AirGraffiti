@@ -1,82 +1,167 @@
 #include "wiimotecalibration.h"
-#include "wiimote_config.h"
 
-#include <algorithm>
-#include <vector>
+#include <cmath>
 
-// The WiiMoteCalibration class manages calibration profiles for multiple Wii Remotes,
-// allowing for scaling and offset adjustments to raw IR points.
-
-WiiMoteCalibration::WiiMoteCalibration(std::size_t remoteCount)
+namespace
 {
-    Resize(remoteCount);
+    constexpr float EPSILON = 0.000001f;
 }
 
-void WiiMoteCalibration::Resize(std::size_t remoteCount)
+void WiiMoteCalibration::Reset()
 {
-    profiles.resize(remoteCount);
+    topX = {};
+    leftX = {};
 }
 
-std::size_t WiiMoteCalibration::Size() const
+bool WiiMoteCalibration::IsCalibrated() const
 {
-    return profiles.size();
+    return topX.calibrated && leftX.calibrated;
 }
 
-void WiiMoteCalibration::Reset(std::size_t remoteIndex)
+bool WiiMoteCalibration::Calculate(
+    const std::vector<WiiMoteCalibrationSample>& samples,
+    float canvasWidth, float canvasHeight)
 {
-    if (remoteIndex >= profiles.size())
-        return;
+    Reset();
 
-    profiles[remoteIndex] = {};
+    if (samples.size() < 2 || canvasWidth <= 0.0f || canvasHeight <= 0.0f)
+        return false;
+
+    std::vector<float> topRaw;
+    std::vector<float> leftRaw;
+    std::vector<float> targetX;
+    std::vector<float> targetY;
+
+    topRaw.reserve(samples.size());
+    leftRaw.reserve(samples.size());
+    targetX.reserve(samples.size());
+    targetY.reserve(samples.size());
+
+    // The samples are captured in screen-corner order:
+    // 0 = TL, 1 = TR, 2 = BR, 3 = BL.
+    for (std::size_t i = 0; i < samples.size(); ++i)
+    {
+        float x = 0.0f;
+        float y = 0.0f;
+
+        switch (i)
+        {
+            case 0: // top-left
+                x = 0.0f;
+                y = 0.0f;
+                break;
+
+            case 1: // top-right
+                x = canvasWidth - 1.0f;
+                y = 0.0f;
+                break;
+
+            case 2: // bottom-right
+                x = canvasWidth - 1.0f;
+                y = canvasHeight - 1.0f;
+                break;
+
+            case 3: // bottom-left
+                x = 0.0f;
+                y = canvasHeight - 1.0f;
+                break;
+
+            default:
+                // Four samples are normally used. If more are supplied,
+                // only the defined four screen targets are meaningful.
+                return false;
+        }
+
+        topRaw.push_back(samples[i].topX);
+        leftRaw.push_back(samples[i].leftX);
+        targetX.push_back(x);
+        targetY.push_back(y);
+    }
+
+    const bool topSolved = FitAxis(topRaw, targetX, topX);
+    const bool leftSolved = FitAxis(leftRaw, targetY, leftX);
+
+    if (!topSolved || !leftSolved)
+    {
+        Reset();
+        return false;
+    }
+
+    return true;
 }
 
-void WiiMoteCalibration::ResetAll()
+bool WiiMoteCalibration::FitAxis(
+    const std::vector<float>& raw,
+    const std::vector<float>& target,
+    WiiMoteAxisCalibration& result)
 {
-    for (auto& profile : profiles)
-        profile = {};
+    result = {};
+
+    if (raw.size() != target.size() || raw.size() < 2)
+        return false;
+
+    // Least-squares fit for:
+    //
+    // target = raw * scale + offset
+    //
+    // This lets all four calibration corners contribute to the
+    // 1D calibration rather than relying on only two points.
+    double sumRaw = 0.0;
+    double sumTarget = 0.0;
+    double sumRawSquared = 0.0;
+    double sumRawTarget = 0.0;
+
+    for (std::size_t i = 0; i < raw.size(); ++i)
+    {
+        const double r = raw[i];
+        const double t = target[i];
+
+        sumRaw += r;
+        sumTarget += t;
+        sumRawSquared += r * r;
+        sumRawTarget += r * t;
+    }
+
+    const double count = static_cast<double>(raw.size());
+    const double denominator = count * sumRawSquared - sumRaw * sumRaw;
+
+    if (std::fabs(denominator) < EPSILON)
+        return false;
+
+    const double scale =
+        (count * sumRawTarget - sumRaw * sumTarget) / denominator;
+
+    const double offset =
+        (sumTarget - scale * sumRaw) / count;
+
+    result.calibrated = true;
+    result.scale = static_cast<float>(scale);
+    result.offset = static_cast<float>(offset);
+
+    return true;
 }
 
-bool WiiMoteCalibration::IsCalibrated(std::size_t remoteIndex) const
+FusedPoint WiiMoteCalibration::Apply(float topRawX, float leftRawX) const
 {
-    return remoteIndex < profiles.size() && profiles[remoteIndex].calibrated;
-}
+    FusedPoint result;
 
-const WiiMoteCalibrationProfile& WiiMoteCalibration::GetProfile(
-    std::size_t remoteIndex) const
-{
-    static const WiiMoteCalibrationProfile defaultProfile{};
-    if (remoteIndex >= profiles.size())
-        return defaultProfile;
-
-    return profiles[remoteIndex];
-}
-
-void WiiMoteCalibration::SetProfile(
-    std::size_t remoteIndex,
-    const WiiMoteCalibrationProfile& profile)
-{
-    if (remoteIndex >= profiles.size())
-        return;
-
-    profiles[remoteIndex] = profile;
-}
-
-WiiMoteIRPoint WiiMoteCalibration::Apply(
-    std::size_t remoteIndex,
-    const WiiMoteIRPoint& rawPoint) const
-{
-    WiiMoteIRPoint result = rawPoint;
-
-    if (!rawPoint.visible || remoteIndex >= profiles.size())
+    if (!IsCalibrated())
         return result;
 
-    const auto& profile = profiles[remoteIndex];
-
-    result.x = rawPoint.x * profile.scaleX + profile.offsetX;
-    result.y = rawPoint.y * profile.scaleY + profile.offsetY;
-
-    result.x = std::clamp(result.x, 0.0f, static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH - 1));
-    result.y = std::clamp(result.y, 0.0f, static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT - 1));
+    result.valid = true;
+    result.x = topX.Apply(topRawX);
+    result.y = leftX.Apply(leftRawX);
+    result.contributingRemotes = 2;
 
     return result;
+}
+
+const WiiMoteAxisCalibration& WiiMoteCalibration::GetTopCalibration() const
+{
+    return topX;
+}
+
+const WiiMoteAxisCalibration& WiiMoteCalibration::GetLeftCalibration() const
+{
+    return leftX;
 }

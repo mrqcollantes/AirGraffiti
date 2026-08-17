@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-Application::Application() : wiimoteManager(WiiMoteConfig::DEFAULT_WIIMOTE_COUNT)
+Application::Application() : wiimoteManager(WiiMoteManager::REMOTE_COUNT)
 {
     running = true;
 }
@@ -41,87 +41,85 @@ void Application::Run()
 
 void Application::Update()
 {
-    wiimoteManager.Update();
-
-    // Mouse drawing remains unchanged.
+    // Mouse input
     if (input.GetPointer().drawing)
     {
-        int windowWidth = 0;
-        int windowHeight = 0;
-
+        int windowWidth = 0, windowHeight = 0;
         renderer.GetWindowSize(windowWidth, windowHeight);
 
-        float scaleX = static_cast<float>(canvas.GetWidth()) / static_cast<float>(windowWidth);
-        float scaleY = static_cast<float>(canvas.GetHeight()) / static_cast<float>(windowHeight);
+        if (windowWidth > 0 && windowHeight > 0)
+        {
+            const float scaleX = static_cast<float>(canvas.GetWidth()) / static_cast<float>(windowWidth);
+            const float scaleY = static_cast<float>(canvas.GetHeight()) / static_cast<float>(windowHeight);
 
-        brush.DrawStroke(canvas, renderer,
-            static_cast<int>(input.GetPointer().previousX * scaleX),
-            static_cast<int>(input.GetPointer().previousY * scaleY),
-            static_cast<int>(input.GetPointer().x * scaleX),
-            static_cast<int>(input.GetPointer().y * scaleY));
+            brush.DrawStroke(
+                canvas, renderer,
+                static_cast<int>(input.GetPointer().previousX * scaleX),
+                static_cast<int>(input.GetPointer().previousY * scaleY),
+                static_cast<int>(input.GetPointer().x * scaleX),
+                static_cast<int>(input.GetPointer().y * scaleY));
+        }
     }
 
+    // Wii Remotes
+    wiimoteManager.Update();
     const FusedPoint& fused = wiimoteManager.GetFusedPoint();
 
-    if (fused.valid)
-    {
-        int x = static_cast<int>(fused.x);
-        int y = canvas.GetHeight() - static_cast<int>(fused.y);
-
-        float displayWidth = 0.0f;
-        float displayHeight = 0.0f;
-        ui.GetDisplaySize(displayWidth, displayHeight);
-
-        float windowX = static_cast<float>(x) * (displayWidth / static_cast<float>(canvas.GetWidth()));
-        float windowY = static_cast<float>(y) * (displayHeight / static_cast<float>(canvas.GetHeight()));
-
-        bool overUI = windowY >= (displayHeight - UI::PANEL_HEIGHT);
-
-        if (!irWasActive)
-        {
-            isUIPress = overUI;
-        }
-
-        if (isUIPress)
-        {
-            // UI interaction: feed ImGui a live position and a held button every frame,so a quick
-            // tap reads as a click and a hold-and-move reads as a drag (e.g. the brush size slider).
-            ui.SubmitPointerPosition(windowX, windowY);
-            ui.SubmitPointerButton(true);
-
-            previousIRValid = false;
-        }
-        else
-        {
-            if (previousIRValid)
-            {
-                brush.DrawStroke(canvas, renderer, previousIRX, previousIRY, x, y);
-            }
-            else
-            {
-                brush.DrawStroke(canvas, renderer, x, y, x, y);
-            }
-
-            previousIRX = x;
-            previousIRY = y;
-            previousIRValid = true;
-        }
-
-        irWasActive = true;
-    }
-    else
+    // No valid position means the emitter isn't currently being
+    // successfully read by all required remotes.
+    if (!fused.valid)
     {
         if (irWasActive && isUIPress)
-        {
-            // The trigger just released and this press was a UI interaction:
-            // send the matching button-up so ImGui completes the click/drag cleanly.
             ui.SubmitPointerButton(false);
-        }
 
         irWasActive = false;
         isUIPress = false;
         previousIRValid = false;
+        return;
     }
+
+    // Fused coordinates are already in canvas coordinates.
+    const int x = static_cast<int>(fused.x);
+    const int y = static_cast<int>(fused.y);
+
+    // Convert canvas coordinates to window coordinates for ImGui.
+    float displayWidth = 0.0f, displayHeight = 0.0f;
+    ui.GetDisplaySize(displayWidth, displayHeight);
+
+    if (canvas.GetWidth() <= 0 || canvas.GetHeight() <= 0 || displayWidth <= 0.0f || displayHeight <= 0.0f)
+        return;
+
+    const float windowX = static_cast<float>(x) * (displayWidth / static_cast<float>(canvas.GetWidth()));
+    const float windowY = static_cast<float>(y) * (displayHeight / static_cast<float>(canvas.GetHeight()));
+
+    // Determine whether the pointer is over the UI panel.
+    const bool overUI = windowY >= (displayHeight - UI::PANEL_HEIGHT);
+
+    // A new IR interaction begins. Decide ONCE whether it belongs to the UI.
+    if (!irWasActive)
+        isUIPress = overUI;
+
+    if (isUIPress)
+    {
+        // UI interaction
+        ui.SubmitPointerPosition(windowX, windowY);
+        ui.SubmitPointerButton(true);
+        previousIRValid = false;
+    }
+    else
+    {
+        // Canvas drawing
+        if (previousIRValid)
+            brush.DrawStroke(canvas, renderer, previousIRX, previousIRY, x, y);
+        else
+            brush.DrawStroke(canvas, renderer, x, y, x, y);
+
+        previousIRX = x;
+        previousIRY = y;
+        previousIRValid = true;
+    }
+
+    irWasActive = true;
 }
 
 void Application::Render()

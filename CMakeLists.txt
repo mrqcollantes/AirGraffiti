@@ -34,7 +34,6 @@ add_executable(AirGraffiti
     src/ui.cpp
     src/wiimotemanager.cpp
     src/wiimotecalibration.cpp
-    src/irfusion.cpp
 
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp

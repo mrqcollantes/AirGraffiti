@@ -1,66 +1,100 @@
 #pragma once
 
 #include <cstddef>
+#include <deque>
 #include <vector>
 
 #include "wiimote_config.h"
 #include "wiimotecalibration.h"
-#include "irfusion.h"
 
 struct wiimote_t;
 
-struct WiiMoteRemoteState
+enum class WiiMoteSystemState
 {
-    bool connected = false;
-    bool irActive = false;
-    bool calibrated = false;
-
-    int visiblePointCount = 0;
-
-    WiiMoteIRPoint rawIR;
-    WiiMoteIRPoint calibratedIR;
+    WaitingForRemotes, Calibrating, Ready, Error
 };
 
+// Remote 0 = TOP (Remote X to Screen X), Remote 1 = LEFT (Remote X to Screen Y)
 class WiiMoteManager
 {
-    public:
-        explicit WiiMoteManager(std::size_t remoteCount = WiiMoteConfig::DEFAULT_WIIMOTE_COUNT);
-        ~WiiMoteManager();
+public:
+    static constexpr std::size_t REMOTE_COUNT = 2;
+    static constexpr std::size_t TOP_REMOTE = 0;
+    static constexpr std::size_t LEFT_REMOTE = 1;
 
-        bool Init();
-        void Update();
-        void Shutdown();
+    explicit WiiMoteManager(std::size_t remoteCount = REMOTE_COUNT);
+    ~WiiMoteManager();
 
-        bool SetRemoteCount(std::size_t remoteCount);
-        std::size_t GetRemoteCount() const;
-        std::size_t GetConnectedCount() const;
+    bool Init();
+    void Update();
+    void Shutdown();
 
-        bool IsInitialized() const;
+    bool IsInitialized() const;
+    bool IsReady() const;
+    bool AllRemotesConnected() const;
+    bool AllRemotesSeeingIR() const;
 
-        const WiiMoteRemoteState& GetRemoteState(std::size_t remoteIndex) const;
-        const std::vector<WiiMoteRemoteState>& GetRemoteStates() const;
+    std::size_t GetRemoteCount() const;
+    std::size_t GetConnectedCount() const;
 
-        const FusedPoint& GetFusedPoint() const;
+    struct RemoteState
+    {
+        bool connected = false;
+        bool irActive = false;
+        int visiblePointCount = 0;
+        WiiMoteIRPoint rawIR;
+    };
 
-        WiiMoteCalibration& GetCalibration();
-        const WiiMoteCalibration& GetCalibration() const;
+    const RemoteState& GetRemoteState(std::size_t index) const;
+    const std::vector<RemoteState>& GetRemoteStates() const;
 
-    private:
-        bool ConnectRemotes();
-        void ConfigureRemote(wiimote_t* remote);
-        void ResetStates();
-        void ProcessRemote(std::size_t index, wiimote_t* remote);
+    const FusedPoint& GetFusedPoint() const;
 
-        std::size_t remoteCount;
-        bool initialized = false;
+    WiiMoteSystemState GetSystemState() const;
+    int GetCalibrationStep() const;
+    bool CaptureCalibrationPoint();
+    void ResetCalibration();
 
-        wiimote_t** wiimotes = nullptr;
+    const WiiMoteCalibration& GetCalibration() const;
 
-        std::vector<WiiMoteRemoteState> states;
-        WiiMoteCalibration calibration;
-        AverageFusion fusion;
-        FusedPoint fusedPoint;
+private:
+    bool ConnectRemotes();
+    void ConfigureRemote(wiimote_t* remote);
+    void ProcessRemote(std::size_t index, wiimote_t* remote);
+    bool TryCaptureCalibrationPoint();
+    void UpdateCalibrationStability();
+    void UpdateTrackedPoint();
+    void ResetStates();
+    void ClearCalibrationProgress();
 
-        WiiMoteManager(const WiiMoteManager&) = delete;
-        WiiMoteManager& operator=(const WiiMoteManager&) = delete;
+    std::size_t remoteCount = REMOTE_COUNT;
+    bool initialized = false;
+    wiimote_t** wiimotes = nullptr;
+
+    std::vector<RemoteState> states;
+    WiiMoteCalibration calibration;
+    FusedPoint fusedPoint;
+
+    WiiMoteSystemState systemState = WiiMoteSystemState::WaitingForRemotes;
+
+    // 0 = top-left, 1 = top-right, 2 = bottom-right, 3 = bottom-left.
+    int calibrationStep = 0;
+    std::vector<WiiMoteCalibrationSample> calibrationSamples;
+
+    // Stability is judged over a rolling window rather than a single
+    // frame-to-frame delta, so a shaky hand doesn't stall calibration.
+    // A sample is captured using the *average* of the window, once the
+    // window has been stable for long enough.
+    static constexpr std::size_t STABILITY_WINDOW = 15;
+
+    // A single occluded/glitched IR frame during an otherwise-stable hold doesn't reset progress.
+    static constexpr int MAX_GRACE_FRAMES = 2;
+
+    std::deque<float> topXWindow;
+    std::deque<float> leftXWindow;
+    int stableFrames = 0;
+    int unstableStreak = 0;
+
+    WiiMoteManager(const WiiMoteManager&) = delete;
+    WiiMoteManager& operator=(const WiiMoteManager&) = delete;
 };

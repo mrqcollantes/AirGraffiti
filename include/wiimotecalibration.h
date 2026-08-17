@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 
+// Raw IR observation from a Wii Remote.
 struct WiiMoteIRPoint
 {
     bool visible = false;
@@ -14,34 +15,76 @@ struct WiiMoteIRPoint
     float y = 0.0f;
 };
 
-struct WiiMoteCalibrationProfile
+// Final screen position.
+// Remote 0 (TOP) provides screen X, Remote 1 (LEFT) provides screen Y.
+// Both remotes must currently see the IR source for this point to be valid.
+struct FusedPoint
 {
-    float scaleX = 1.0f;
-    float scaleY = 1.0f;
-    float offsetX = 0.0f;
-    float offsetY = 0.0f;
+    bool valid = false;
+
+    float x = 0.0f;
+    float y = 0.0f;
+
+    std::size_t contributingRemotes = 0;
+};
+
+// One synchronized observation of the same IR source by both remotes.
+// topX  = raw X coordinate reported by the TOP remote.
+// leftX = raw X coordinate reported by the LEFT remote.
+struct WiiMoteCalibrationSample
+{
+    float topX = 0.0f;
+    float leftX = 0.0f;
+};
+
+struct WiiMoteAxisCalibration
+{
     bool calibrated = false;
+
+    float scale = 1.0f;
+    float offset = 0.0f;
+
+    float Apply(float rawX) const
+    {
+        return rawX * scale + offset;
+    }
 };
 
 class WiiMoteCalibration
 {
-    public:
-        explicit WiiMoteCalibration(std::size_t remoteCount = 0);
+public:
+    WiiMoteCalibration() = default;
 
-        void Resize(std::size_t remoteCount);
-        std::size_t Size() const;
+    void Reset();
 
-        void Reset(std::size_t remoteIndex);
-        void ResetAll();
+    bool IsCalibrated() const;
 
-        bool IsCalibrated(std::size_t remoteIndex) const;
+    // Fits two independent 1D mappings:
+    // TOP remote X  -> canvas X
+    // LEFT remote X -> canvas Y
+    //
+    // The calibration samples are expected to be in this order:
+    // 0 = top-left
+    // 1 = top-right
+    // 2 = bottom-right
+    // 3 = bottom-left
+    bool Calculate(
+        const std::vector<WiiMoteCalibrationSample>& samples,
+        float canvasWidth,
+        float canvasHeight);
 
-        const WiiMoteCalibrationProfile& GetProfile(std::size_t remoteIndex) const;
-        void SetProfile(std::size_t remoteIndex, const WiiMoteCalibrationProfile& profile);
+    // Both raw X values are required to produce a valid point.
+    FusedPoint Apply(float topRawX, float leftRawX) const;
 
-        // Applies the profile belonging to this remote.
-        WiiMoteIRPoint Apply(std::size_t remoteIndex, const WiiMoteIRPoint& rawPoint) const;
+    const WiiMoteAxisCalibration& GetTopCalibration() const;
+    const WiiMoteAxisCalibration& GetLeftCalibration() const;
 
-    private:
-        std::vector<WiiMoteCalibrationProfile> profiles;
+private:
+    static bool FitAxis(
+        const std::vector<float>& raw,
+        const std::vector<float>& target,
+        WiiMoteAxisCalibration& result);
+
+    WiiMoteAxisCalibration topX;
+    WiiMoteAxisCalibration leftX;
 };
