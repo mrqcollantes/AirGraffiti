@@ -1,9 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Users/mcollant/Documents/AirGraffiti/build/cmake_install.cmake",
-		"C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/cmake_install.cmake",
-		"C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/src/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

@@ -11,42 +11,33 @@
 
 namespace
 {
-    void PrintCalibrationStatus(const WiiMoteManager& manager, bool allConnected)
+    // Corner names shared by the calibration-progress and capture-event
+    // printers below, so both stay in sync with WiiMoteCalibration's
+    // capture order (0=TL, 1=TR, 2=BR, 3=BL).
+    const char* const kCornerNames[] =
+    {
+        "TOP-LEFT",
+        "TOP-RIGHT",
+        "BOTTOM-RIGHT",
+        "BOTTOM-LEFT"
+    };
+
+    // Only fires for the coarse, infrequent state changes (waiting for
+    // remotes / ready / about to start). Corner-by-corner progress while
+    // Calibrating is handled entirely by PrintCalibrationProgress below.
+    void PrintSystemStatus(const WiiMoteManager& manager, bool allConnected)
     {
         static std::string lastStatus;
         std::string status;
 
         if (!allConnected)
-        {
             status = "[WiiMoteCalibration] WAITING - Both TOP and LEFT remotes must be connected.";
-        }
         else if (manager.GetSystemState() == WiiMoteSystemState::Ready)
-        {
             status = "[WiiMoteCalibration] READY - Press A to restart calibration.";
-        }
         else if (manager.GetSystemState() != WiiMoteSystemState::Calibrating)
-        {
-            status = "[WiiMoteCalibration] READY TO CALIBRATE - Press A, then point at TOP-LEFT.";
-        }
+            status = "[WiiMoteCalibration] Press A to begin calibration (starts at TOP-LEFT).";
         else
-        {
-            static const char* corners[] =
-            {
-                "TOP-LEFT",
-                "TOP-RIGHT",
-                "BOTTOM-RIGHT",
-                "BOTTOM-LEFT"
-            };
-
-            const int step = manager.GetCalibrationStep();
-
-            if (step >= 4)
-                status = "[WiiMoteCalibration] CALCULATING 1D AXIS CALIBRATION...";
-            else
-                status =
-                    std::string("[WiiMoteCalibration] CALIBRATION - Both remotes must see the source at ") +
-                    corners[step] + ", hold steady, then press A.";
-        }
+            return;
 
         if (status != lastStatus)
         {
@@ -68,36 +59,68 @@ namespace
         return sum / static_cast<float>(window.size());
     }
 
-    // Live per-remote diagnostic, throttled and refreshed in place (\r) so
-    // the user can watch it update in real time while repositioning the
-    // remotes, without needing to press A to find out which one dropped.
-    void PrintLiveIRStatus(const WiiMoteManager& manager)
+    // Single refreshing progress line for the corner currently being
+    // captured. Two phases, both drawn on the same \r line:
+    //   - accumulating: STABLE count climbing toward the capture threshold
+    //   - awaiting movement: just captured this corner, waiting for the
+    //     source to move away before the next corner can start accumulating
+    void PrintCalibrationProgress(const WiiMoteManager& manager)
     {
-        static int throttle = 0;
-        if (++throttle % 6 != 0)
+        const int step = manager.GetCalibrationStep();
+        if (step >= 4)
             return;
 
         const auto& top = manager.GetRemoteState(WiiMoteManager::TOP_REMOTE);
         const auto& left = manager.GetRemoteState(WiiMoteManager::LEFT_REMOTE);
 
-        char topField[48];
-        char leftField[48];
+        char topField[16];
+        char leftField[16];
 
+        // DISC / NO IR / SEEN are distinct states - collapsing them into a
+        // single '--' makes "not connected" indistinguishable from
+        // "connected but blind", which is exactly what's hard to diagnose.
+        // A trailing '~' means this reading is being held over from a
+        // recent poll (grace window active) rather than freshly reported
+        // this exact tick - expected to flicker on/off during normal
+        // two-remote interleaving, not a sign of trouble by itself.
         if (!top.connected)
-            std::snprintf(topField, sizeof(topField), "DISCONNECTED");
-        else if (top.irActive)
-            std::snprintf(topField, sizeof(topField), "SEEN  (dots=%d, x=%.0f)", top.visiblePointCount, top.rawIR.x);
+            std::snprintf(topField, sizeof(topField), "T:DISC");
+        else if (!top.irActive)
+            std::snprintf(topField, sizeof(topField), "T:NO IR");
+        else if (top.framesSinceSeen > 0)
+            std::snprintf(topField, sizeof(topField), "T:%.0f~", top.rawIR.x);
         else
-            std::snprintf(topField, sizeof(topField), "NOT SEEN");
+            std::snprintf(topField, sizeof(topField), "T:%.0f", top.rawIR.x);
 
         if (!left.connected)
-            std::snprintf(leftField, sizeof(leftField), "DISCONNECTED");
-        else if (left.irActive)
-            std::snprintf(leftField, sizeof(leftField), "SEEN  (dots=%d, x=%.0f)", left.visiblePointCount, left.rawIR.x);
+            std::snprintf(leftField, sizeof(leftField), "L:DISC");
+        else if (!left.irActive)
+            std::snprintf(leftField, sizeof(leftField), "L:NO IR");
+        else if (left.framesSinceSeen > 0)
+            std::snprintf(leftField, sizeof(leftField), "L:%.0f~", left.rawIR.x);
         else
-            std::snprintf(leftField, sizeof(leftField), "NOT SEEN");
+            std::snprintf(leftField, sizeof(leftField), "L:%.0f", left.rawIR.x);
 
-        std::printf("\r[WiiMoteCalibration] TOP: %-24s | LEFT: %-24s   ", topField, leftField);
+        // Ticks every call regardless of whether anything else changed, so
+        // an unmoving line still visibly updates - proof the loop is alive
+        // rather than looking hung when both remotes report the same thing
+        // frame after frame.
+        static const char heartbeatChars[] = { '|', '/', '-', '\\' };
+        static int heartbeatIndex = 0;
+        const char heartbeat = heartbeatChars[heartbeatIndex++ % 4];
+
+        if (manager.IsAwaitingMovement())
+        {
+            std::printf("\r[Calib] %c %-13s CAPTURED - move source to start next point | %-8s %-8s        ",
+                heartbeat, kCornerNames[step - 1], topField, leftField);
+        }
+        else
+        {
+            std::printf("\r[Calib] %c %-13s STABLE %2d/%2d | %-8s %-8s        ",
+                heartbeat, kCornerNames[step], manager.GetStableFrames(), WiiMoteConfig::CALIBRATION_STABLE_FRAMES,
+                topField, leftField);
+        }
+
         std::fflush(stdout);
     }
 }
@@ -121,6 +144,15 @@ bool WiiMoteManager::Init()
 {
     if (initialized)
         return true;
+
+    // Force every printf to appear immediately instead of sitting in a
+    // buffer until something else happens to flush it. Several of the
+    // informational prints below (banners, connect/disconnect messages,
+    // CAPTURED lines) don't call fflush() themselves, so under a buffered
+    // stdout - the default on Windows/MSVC whenever stdout isn't attached
+    // to a real interactive console - they can sit invisible for an
+    // arbitrarily long time. This must happen before any printf below.
+    std::setvbuf(stdout, nullptr, _IONBF, 0);
 
     std::printf("[WiiMoteManager] Initializing two-remotes axis tracking (R0=TOP, R1=LEFT)...\n");
 
@@ -151,6 +183,22 @@ bool WiiMoteManager::ConnectRemotes()
 
     const int connected = wiiuse_connect(wiimotes, found);
 
+    std::printf(
+        "[WIIUSE] found=%d connected=%d MAX=%d\n",
+        found,
+        connected,
+        WiiMoteConfig::MAX_WIIMOTES
+    );
+
+    for (int i = 0; i < WiiMoteConfig::MAX_WIIMOTES; ++i)
+    {
+        std::printf(
+            "[WIIUSE] slot %d = %p\n",
+            i,
+            static_cast<void*>(wiimotes[i])
+        );
+    }
+
     if (connected <= 0)
     {
         std::printf("[WiiMoteManager] Could not connect to any Wii Remote.\n");
@@ -180,6 +228,14 @@ void WiiMoteManager::ConfigureRemote(wiimote_t* remote)
     if (!remote)
         return;
 
+    // Without this, the remote only sends a report when a button's state
+    // changes - IR/accel data just rides along on whatever report happens
+    // to fire, so wiiuse_poll() returns nothing most frames and everything
+    // downstream (dots, stability accumulation, the debug line) only
+    // appears to update around a button press. This makes it stream
+    // continuously instead.
+    wiiuse_set_flags(remote, WIIUSE_CONTINUOUS, 0);
+
     wiiuse_set_ir(remote, 1);
     wiiuse_set_ir_vres(remote, WiiMoteConfig::OUTPUT_WIDTH, WiiMoteConfig::OUTPUT_HEIGHT);
     wiiuse_set_ir_sensitivity(remote, WiiMoteConfig::IR_SENSITIVITY);
@@ -191,8 +247,48 @@ void WiiMoteManager::Update()
     if (!initialized || !wiimotes)
         return;
 
-    if (!wiiuse_poll(wiimotes, static_cast<int>(REMOTE_COUNT)))
+    const int pollResult = wiiuse_poll(wiimotes, static_cast<int>(REMOTE_COUNT));
+
+    if (!pollResult)
         return;
+
+    static int rawDebugCounter = 0;
+
+    if (++rawDebugCounter % 10 == 0)
+    {
+        for (std::size_t i = 0; i < REMOTE_COUNT; ++i)
+        {
+            if (!wiimotes[i])
+            {
+                std::printf("\n[RAW] R%zu | NULL", i);
+                continue;
+            }
+
+            std::printf(
+                "\n[RAW] R%zu | connected=%d | event=%d | dots=%d",
+                i,
+                WIIMOTE_IS_CONNECTED(wiimotes[i]),
+                wiimotes[i]->event,
+                wiimotes[i]->ir.num_dots
+            );
+
+            for (int d = 0; d < 4; ++d)
+            {
+                if (wiimotes[i]->ir.dot[d].visible)
+                {
+                    std::printf(
+                        " | dot%d=(x=%d,y=%d)",
+                        d,
+                        wiimotes[i]->ir.dot[d].rx,
+                        wiimotes[i]->ir.dot[d].ry
+                    );
+                }
+            }
+        }
+
+        std::printf("\n");
+        std::fflush(stdout);
+    }
 
     bool aPressed = false;
 
@@ -220,68 +316,50 @@ void WiiMoteManager::Update()
         systemState = WiiMoteSystemState::WaitingForRemotes;
         fusedPoint = {};
         ClearCalibrationProgress();
-        PrintCalibrationStatus(*this, false);
+        PrintSystemStatus(*this, false);
         return;
     }
 
-    if (aPressed)
+    if (aPressed && (systemState == WiiMoteSystemState::WaitingForRemotes || systemState == WiiMoteSystemState::Ready))
     {
-        if (systemState == WiiMoteSystemState::WaitingForRemotes || systemState == WiiMoteSystemState::Ready)
-        {
-            ResetCalibration();
+        ResetCalibration();
 
-            std::printf(
-                "\n==================================================\n"
-                "       TWO-REMOTE CALIBRATION STARTED\n"
-                "==================================================\n"
-                "R0 TOP  -> screen X\n"
-                "R1 LEFT -> screen Y\n"
-                "\n"
-                "Both remotes MUST see the same IR source.\n"
-                "Point at TOP-LEFT, hold steady, then press A.\n"
-                "==================================================\n");
-        }
-        else if (systemState == WiiMoteSystemState::Calibrating)
-        {
-            if (TryCaptureCalibrationPoint())
-            {
-                if (calibrationStep < 4)
-                {
-                    static const char* nextPoint[] =
-                    {
-                        "TOP-LEFT",
-                        "TOP-RIGHT",
-                        "BOTTOM-RIGHT",
-                        "BOTTOM-LEFT"
-                    };
-
-                    std::printf(
-                        "\n[WiiMoteCalibration] Captured point %d/4.\n"
-                        "Next: %s.\n"
-                        "Both remotes must see the source. "
-                        "Hold steady, then press A.\n",
-                        calibrationStep, nextPoint[calibrationStep]);
-                }
-            }
-            else
-            {
-                std::printf(
-                    "\n[WiiMoteCalibration] CANNOT CAPTURE.\n"
-                    "Both remotes must see the same source and remain stable.\n"
-                    "Stable frames: %d/%d\n",
-                    stableFrames, WiiMoteConfig::CALIBRATION_STABLE_FRAMES);
-            }
-        }
+        std::printf(
+            "\n==================================================\n"
+            "       TWO-REMOTE CALIBRATION STARTED\n"
+            "==================================================\n"
+            "R0 TOP  -> screen X\n"
+            "R1 LEFT -> screen Y\n"
+            "\n"
+            "Both remotes MUST see the same IR source.\n"
+            "Point at TOP-LEFT and hold steady - capture is automatic.\n"
+            "==================================================\n");
     }
 
     if (!calibration.IsCalibrated())
     {
         UpdateCalibrationStability();
         fusedPoint = {};
-        PrintCalibrationStatus(*this, true);
 
         if (systemState == WiiMoteSystemState::Calibrating)
-            PrintLiveIRStatus(*this);
+        {
+            if (TryCaptureCalibrationPoint())
+            {
+                const auto& sample = calibrationSamples[calibrationStep - 1];
+
+                std::printf("\n[Calib] CAPTURED %d/4 (%-12s) TOP=%.1f LEFT=%.1f\n",
+                    calibrationStep, kCornerNames[calibrationStep - 1], sample.topX, sample.leftX);
+
+                if (calibrationStep < 4)
+                    std::printf("[Calib] Move source to %s and hold steady.\n", kCornerNames[calibrationStep]);
+            }
+
+            PrintCalibrationProgress(*this);
+        }
+        else
+        {
+            PrintSystemStatus(*this, true);
+        }
 
         return;
     }
@@ -300,12 +378,16 @@ void WiiMoteManager::Update()
     char leftField[24];
     char screenField[32];
 
-    if (top.irActive)
+    if (top.irActive && top.framesSinceSeen > 0)
+        std::snprintf(topField, sizeof(topField), "TOP X=%d~", static_cast<int>(top.rawIR.x));
+    else if (top.irActive)
         std::snprintf(topField, sizeof(topField), "TOP X=%d", static_cast<int>(top.rawIR.x));
     else
         std::snprintf(topField, sizeof(topField), "TOP NO IR");
 
-    if (left.irActive)
+    if (left.irActive && left.framesSinceSeen > 0)
+        std::snprintf(leftField, sizeof(leftField), "LEFT X=%d~", static_cast<int>(left.rawIR.x));
+    else if (left.irActive)
         std::snprintf(leftField, sizeof(leftField), "LEFT X=%d", static_cast<int>(left.rawIR.x));
     else
         std::snprintf(leftField, sizeof(leftField), "LEFT NO IR");
@@ -336,37 +418,62 @@ void WiiMoteManager::ProcessRemote(std::size_t index, wiimote_t* remote)
     }
 
     state.connected = true;
-    state.irActive = false;
-    state.visiblePointCount = 0;
-    state.rawIR = {};
 
+    int visibleThisPoll = 0;
     for (int dotIndex = 0; dotIndex < 4; ++dotIndex)
     {
         if (remote->ir.dot[dotIndex].visible)
-            ++state.visiblePointCount;
+            ++visibleThisPoll;
     }
 
-    // One visible IR source is sufficient. We intentionally use the first
-    // visible dot because this system is tracking one source, not a 4-point
-    // Wii pointing pose.
-    if (state.visiblePointCount <= 0)
-        return;
+    // visiblePointCount always reflects THIS poll's literal truth, even
+    // during a grace-held frame below - it's a diagnostic field, not part
+    // of tracking logic, so it should never lie about what was actually
+    // reported.
+    state.visiblePointCount = visibleThisPoll;
 
-    for (int dotIndex = 0; dotIndex < 4; ++dotIndex)
+    if (visibleThisPoll > 0)
     {
-        if (!remote->ir.dot[dotIndex].visible)
-            continue;
+        // One visible IR source is sufficient. We intentionally use the
+        // first visible dot because this system is tracking one source,
+        // not a 4-point Wii pointing pose.
+        for (int dotIndex = 0; dotIndex < 4; ++dotIndex)
+        {
+            if (!remote->ir.dot[dotIndex].visible)
+                continue;
 
-        const ir_dot_t& dot = remote->ir.dot[dotIndex];
+            const ir_dot_t& dot = remote->ir.dot[dotIndex];
 
-        state.rawIR.visible = true;
-        state.rawIR.rawX = dot.rx;
-        state.rawIR.rawY = dot.ry;
-        state.rawIR.x = static_cast<float>(dot.rx);
-        state.rawIR.y = static_cast<float>(dot.ry);
+            state.rawIR.visible = true;
+            state.rawIR.rawX = dot.rx;
+            state.rawIR.rawY = dot.ry;
+            state.rawIR.x = static_cast<float>(dot.rx);
+            state.rawIR.y = static_cast<float>(dot.ry);
+            break;
+        }
+
         state.irActive = true;
+        state.framesSinceSeen = 0;
         return;
     }
+
+    // No dot in THIS poll. With two remotes streaming continuous IR over
+    // the same Bluetooth radio, the host commonly services them on
+    // alternating ticks rather than both in the same tick - R0 gets a
+    // report this instant, R1 the next, back and forth. That's radio/
+    // scheduling contention, not the source leaving view, so a short run
+    // of misses is held over using the last-known-good reading instead of
+    // being treated as "lost" immediately.
+    ++state.framesSinceSeen;
+
+    if (state.framesSinceSeen > IR_STALE_GRACE_FRAMES)
+    {
+        // Genuinely gone (occluded, out of range, etc.) - only now clear it.
+        state.irActive = false;
+        state.rawIR = {};
+    }
+    // else: irActive and rawIR are left exactly as they were on the last
+    // poll the dot was actually seen on - a deliberate hold, not a bug.
 }
 
 bool WiiMoteManager::AllRemotesConnected() const
@@ -398,6 +505,16 @@ int WiiMoteManager::GetCalibrationStep() const
     return calibrationStep;
 }
 
+int WiiMoteManager::GetStableFrames() const
+{
+    return stableFrames;
+}
+
+bool WiiMoteManager::IsAwaitingMovement() const
+{
+    return awaitingMovement;
+}
+
 bool WiiMoteManager::CaptureCalibrationPoint()
 {
     return TryCaptureCalibrationPoint();
@@ -406,6 +523,11 @@ bool WiiMoteManager::CaptureCalibrationPoint()
 bool WiiMoteManager::TryCaptureCalibrationPoint()
 {
     if (!initialized || systemState != WiiMoteSystemState::Calibrating || calibrationStep >= 4)
+        return false;
+
+    // Just captured this corner - don't fire again until the source has
+    // moved away and a fresh STABLE window has been earned at the next one.
+    if (awaitingMovement)
         return false;
 
     if (!AllRemotesSeeingIR())
@@ -427,19 +549,24 @@ bool WiiMoteManager::TryCaptureCalibrationPoint()
     calibrationSamples[calibrationStep] = sample;
 
     ++calibrationStep;
+
+    const bool calibrationFinished = calibrationStep >= 4;
+
     ClearCalibrationProgress();
 
-    std::printf("\n[WiiMoteCalibration] Captured synchronized point %d/4 (TOP X=%.1f, LEFT X=%.1f).\n",
-        calibrationStep, sample.topX, sample.leftX);
-
-    if (calibrationStep < 4)
+    if (!calibrationFinished)
+    {
+        awaitingMovement = true;
+        lastCapturedTopX = sample.topX;
+        lastCapturedLeftX = sample.leftX;
         return true;
+    }
 
     if (!calibration.Calculate(calibrationSamples,
             static_cast<float>(WiiMoteConfig::OUTPUT_WIDTH),
             static_cast<float>(WiiMoteConfig::OUTPUT_HEIGHT)))
     {
-        std::printf("[WiiMoteCalibration] Failed to calculate axis mappings. Restart calibration with A.\n");
+        std::printf("[Calib] Failed to calculate axis mappings. Press A to restart calibration.\n");
         ResetCalibration();
         return false;
     }
@@ -465,6 +592,26 @@ bool WiiMoteManager::TryCaptureCalibrationPoint()
 
 void WiiMoteManager::UpdateCalibrationStability()
 {
+    if (awaitingMovement)
+    {
+        if (!AllRemotesSeeingIR())
+            return;
+
+        // Require a deliberate move, not just jitter, before treating the
+        // source as "on the next corner" - a few stability-pixels' worth
+        // isn't enough to distinguish a hand tremor from an actual move.
+        const float moveThreshold = WiiMoteConfig::CALIBRATION_STABILITY_PIXELS * 4.0f;
+
+        const float topDelta = std::fabs(states[TOP_REMOTE].rawIR.x - lastCapturedTopX);
+        const float leftDelta = std::fabs(states[LEFT_REMOTE].rawIR.x - lastCapturedLeftX);
+
+        if (topDelta < moveThreshold && leftDelta < moveThreshold)
+            return;
+
+        awaitingMovement = false;
+        // Falls through to start accumulating the next corner's window below.
+    }
+
     if (!AllRemotesSeeingIR())
     {
         // A single dropped dot (camera flicker, momentary occlusion) is
@@ -617,6 +764,7 @@ void WiiMoteManager::ClearCalibrationProgress()
     unstableStreak = 0;
     topXWindow.clear();
     leftXWindow.clear();
+    awaitingMovement = false;
 }
 
 void WiiMoteManager::Shutdown()

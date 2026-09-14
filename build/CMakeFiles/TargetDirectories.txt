@@ -1,8 +1,0 @@
-C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/AirGraffiti.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/INSTALL.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/CMakeFiles/INSTALL.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/CMakeFiles/ALL_BUILD.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/src/CMakeFiles/wiiuse.dir
-C:/Users/mcollant/Documents/AirGraffiti/build/wiiuse/src/CMakeFiles/INSTALL.dir

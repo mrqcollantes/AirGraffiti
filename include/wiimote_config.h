@@ -6,7 +6,7 @@ namespace WiiMoteConfig
     // Current tracking method uses exactly two:
     //   Remote 0 = TOP
     //   Remote 1 = LEFT
-    constexpr int MAX_WIIMOTES = 5;
+    constexpr int MAX_WIIMOTES = 2;
 
     // Wiiuse IR coordinate space.
     constexpr int IR_WIDTH = 1024;
@@ -17,6 +17,8 @@ namespace WiiMoteConfig
     // AirGraffiti canvas.
     constexpr int OUTPUT_WIDTH = 1280;
     constexpr int OUTPUT_HEIGHT = 720;
+
+    constexpr int MIN_VISIBLE_POINTS = 1;
 
     // Number of consecutive frames the IR source must remain
     // stable before a calibration point can be captured.

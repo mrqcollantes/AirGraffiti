@@ -1,0 +1,9 @@
+# CMake / Visual Studio build output
+build/
+
+# Visual Studio
+.vs/
+
+# User-specific files
+*.user
+*.suo
