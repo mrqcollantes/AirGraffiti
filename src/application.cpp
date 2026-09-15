@@ -41,83 +41,179 @@ void Application::Run()
 
 void Application::Update()
 {
+    // ---------------------------------------------------------
     // Mouse input
-    if (input.GetPointer().drawing)
-    {
-        int windowWidth = 0, windowHeight = 0;
-        renderer.GetWindowSize(windowWidth, windowHeight);
+    // ---------------------------------------------------------
 
-        if (windowWidth > 0 && windowHeight > 0)
+    Pointer& mouse = input.GetPointer();
+
+    float displayWidth = 0.0f;
+    float displayHeight = 0.0f;
+    ui.GetDisplaySize(displayWidth, displayHeight);
+
+    if (mouse.drawing &&
+        displayWidth > 0.0f &&
+        displayHeight > 0.0f)
+    {
+        // Mouse coordinates are already in window coordinates.
+        const float mouseX = mouse.x;
+        const float mouseY = mouse.y;
+
+        // Do not draw inside the UI panel.
+        const bool mouseOverUI =
+            mouseY >= (displayHeight - UI::PANEL_HEIGHT);
+
+        if (!mouseOverUI)
         {
-            const float scaleX = static_cast<float>(canvas.GetWidth()) / static_cast<float>(windowWidth);
-            const float scaleY = static_cast<float>(canvas.GetHeight()) / static_cast<float>(windowHeight);
+            const float scaleX =
+                static_cast<float>(canvas.GetWidth()) / displayWidth;
+
+            const float scaleY =
+                static_cast<float>(canvas.GetHeight()) / displayHeight;
 
             brush.DrawStroke(
-                canvas, renderer,
-                static_cast<int>(input.GetPointer().previousX * scaleX),
-                static_cast<int>(input.GetPointer().previousY * scaleY),
-                static_cast<int>(input.GetPointer().x * scaleX),
-                static_cast<int>(input.GetPointer().y * scaleY));
+                canvas,
+                renderer,
+                static_cast<int>(mouse.previousX * scaleX),
+                static_cast<int>(mouse.previousY * scaleY),
+                static_cast<int>(mouseX * scaleX),
+                static_cast<int>(mouseY * scaleY)
+            );
         }
     }
 
-    // Wii Remotes
+    // ---------------------------------------------------------
+    // Wii Remote / IR input
+    // ---------------------------------------------------------
+
     wiimoteManager.Update();
-    const FusedPoint& fused = wiimoteManager.GetFusedPoint();
 
-    // No valid position means the emitter isn't currently being
-    // successfully read by all required remotes.
-    if (!fused.valid)
+    const FusedPoint& fused =
+        wiimoteManager.GetFusedPoint();
+
+    // ---------------------------------------------------------
+    // IR lost
+    // ---------------------------------------------------------
+
+    // Grace frames are useful for keeping the two-remote tracker stable, but
+    // they should NOT keep a drawing stroke alive when the IR source is gone.
+    // IsIRActiveForDrawing() detects the intentional "both remotes missed the
+    // source" case and forces the next reacquisition to start a new stroke.
+    if (!fused.valid || !wiimoteManager.IsIRActiveForDrawing())
     {
+        // If IR was controlling the UI, release the ImGui button.
         if (irWasActive && isUIPress)
+        {
             ui.SubmitPointerButton(false);
+        }
 
+        // IR is no longer active.
         irWasActive = false;
         isUIPress = false;
+
+        // The next IR position is a NEW stroke.
         previousIRValid = false;
+
         return;
     }
 
-    // Fused coordinates are already in canvas coordinates.
+    // ---------------------------------------------------------
+    // IR position
+    // ---------------------------------------------------------
+
     const int x = static_cast<int>(fused.x);
     const int y = static_cast<int>(fused.y);
 
-    // Convert canvas coordinates to window coordinates for ImGui.
-    float displayWidth = 0.0f, displayHeight = 0.0f;
-    ui.GetDisplaySize(displayWidth, displayHeight);
-
-    if (canvas.GetWidth() <= 0 || canvas.GetHeight() <= 0 || displayWidth <= 0.0f || displayHeight <= 0.0f)
+    // Convert canvas coordinates to ImGui/window coordinates.
+    if (canvas.GetWidth() <= 0 ||
+        canvas.GetHeight() <= 0 ||
+        displayWidth <= 0.0f ||
+        displayHeight <= 0.0f)
+    {
         return;
+    }
 
-    const float windowX = static_cast<float>(x) * (displayWidth / static_cast<float>(canvas.GetWidth()));
-    const float windowY = static_cast<float>(y) * (displayHeight / static_cast<float>(canvas.GetHeight()));
+    const float windowX =
+        static_cast<float>(x) *
+        (displayWidth / static_cast<float>(canvas.GetWidth()));
 
-    // Determine whether the pointer is over the UI panel.
-    const bool overUI = windowY >= (displayHeight - UI::PANEL_HEIGHT);
+    const float windowY =
+        static_cast<float>(y) *
+        (displayHeight / static_cast<float>(canvas.GetHeight()));
 
-    // A new IR interaction begins. Decide ONCE whether it belongs to the UI.
+    // ---------------------------------------------------------
+    // Determine whether IR is over the UI
+    // ---------------------------------------------------------
+
+    const bool overUI =
+        windowY >= (displayHeight - UI::PANEL_HEIGHT);
+
+    // ---------------------------------------------------------
+    // New IR interaction
+    // ---------------------------------------------------------
+
     if (!irWasActive)
+    {
+        // This is the first frame of a new IR interaction.
+        // Never connect this position to the previous IR position.
+        previousIRValid = false;
+
+        // Decide whether this interaction belongs to the UI.
         isUIPress = overUI;
+    }
+
+    // ---------------------------------------------------------
+    // IR controls UI
+    // ---------------------------------------------------------
 
     if (isUIPress)
     {
-        // UI interaction
         ui.SubmitPointerPosition(windowX, windowY);
         ui.SubmitPointerButton(true);
+
+        // We aren't drawing a canvas stroke while interacting
+        // with the UI.
         previousIRValid = false;
     }
+    // ---------------------------------------------------------
+    // IR controls canvas
+    // ---------------------------------------------------------
+
     else
     {
-        // Canvas drawing
         if (previousIRValid)
-            brush.DrawStroke(canvas, renderer, previousIRX, previousIRY, x, y);
+        {
+            brush.DrawStroke(
+                canvas,
+                renderer,
+                previousIRX,
+                previousIRY,
+                x,
+                y
+            );
+        }
         else
-            brush.DrawStroke(canvas, renderer, x, y, x, y);
+        {
+            // First frame of a new IR interaction.
+            // Draw a single point instead of a connecting line.
+            brush.DrawStroke(
+                canvas,
+                renderer,
+                x,
+                y,
+                x,
+                y
+            );
+        }
 
         previousIRX = x;
         previousIRY = y;
         previousIRValid = true;
     }
+
+    // ---------------------------------------------------------
+    // Remember that IR is currently active
+    // ---------------------------------------------------------
 
     irWasActive = true;
 }

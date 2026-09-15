@@ -33,6 +33,11 @@ public:
     bool IsReady() const;
     bool AllRemotesConnected() const;
     bool AllRemotesSeeingIR() const;
+    // Runtime drawing is allowed while the two-remotes stream is healthy.
+    // A grace-held reading may still be used for tracking, but if BOTH
+    // remotes missed the IR source this poll, the current drawing stroke is
+    // considered interrupted so re-acquisition starts a new stroke.
+    bool IsIRActiveForDrawing() const;
 
     std::size_t GetRemoteCount() const;
     std::size_t GetConnectedCount() const;
@@ -44,11 +49,10 @@ public:
         int visiblePointCount = 0;
         WiiMoteIRPoint rawIR;
 
-        // Frames since a dot was actually reported for this remote. 0 means
-        // "seen this exact poll." Two remotes streaming continuous IR over
-        // one Bluetooth radio are commonly serviced on alternating polls
-        // rather than both in the same tick, so this bridges that gap
-        // instead of treating every missed poll as "source lost."
+        // Application updates since this remote last reported a visible IR dot.
+        // This is intentionally aged every Update(), not only when a
+        // Bluetooth report arrives, so a source that is truly turned off
+        // cannot leave the last-known point alive forever.
         // See WiiMoteManager::IR_STALE_GRACE_FRAMES.
         int framesSinceSeen = 0;
     };

@@ -33,7 +33,7 @@ namespace
         if (!allConnected)
             status = "[WiiMoteCalibration] WAITING - Both TOP and LEFT remotes must be connected.";
         else if (manager.GetSystemState() == WiiMoteSystemState::Ready)
-            status = "[WiiMoteCalibration] READY - Press A to restart calibration.";
+            status = "[WiiMote] DRAWING READY - Move the IR emitter to draw. Press A to recalibrate.";
         else if (manager.GetSystemState() != WiiMoteSystemState::Calibrating)
             status = "[WiiMoteCalibration] Press A to begin calibration (starts at TOP-LEFT).";
         else
@@ -247,14 +247,21 @@ void WiiMoteManager::Update()
     if (!initialized || !wiimotes)
         return;
 
-    const int pollResult = wiiuse_poll(wiimotes, static_cast<int>(REMOTE_COUNT));
+    // Age every remote once per application update, even when wiiuse_poll()
+    // returns no new report. This is important: when the emitter is turned
+    // off, there may be no new Wii Remote event at all, so a poll-only grace
+    // counter would otherwise freeze on the last known IR position forever.
+    for (auto& state : states)
+    {
+        if (state.connected && state.irActive)
+            ++state.framesSinceSeen;
+    }
 
-    if (!pollResult)
-        return;
+    const int pollResult = wiiuse_poll(wiimotes, static_cast<int>(REMOTE_COUNT));
 
     static int rawDebugCounter = 0;
 
-    if (++rawDebugCounter % 10 == 0)
+    if (pollResult && ++rawDebugCounter % 10 == 0)
     {
         for (std::size_t i = 0; i < REMOTE_COUNT; ++i)
         {
@@ -308,7 +315,8 @@ void WiiMoteManager::Update()
             continue;
         }
 
-        ProcessRemote(i, wiimotes[i]);
+        if (pollResult)
+            ProcessRemote(i, wiimotes[i]);
     }
 
     if (!AllRemotesConnected())
@@ -464,8 +472,9 @@ void WiiMoteManager::ProcessRemote(std::size_t index, wiimote_t* remote)
     // scheduling contention, not the source leaving view, so a short run
     // of misses is held over using the last-known-good reading instead of
     // being treated as "lost" immediately.
-    ++state.framesSinceSeen;
-
+    // framesSinceSeen is aged once per Application::Update(), above.
+    // Do not increment it again here or the grace period would be counted
+    // twice on polls that contain a report without a visible dot.
     if (state.framesSinceSeen > IR_STALE_GRACE_FRAMES)
     {
         // Genuinely gone (occluded, out of range, etc.) - only now clear it.
@@ -488,6 +497,35 @@ bool WiiMoteManager::AllRemotesSeeingIR() const
            states[LEFT_REMOTE].irActive &&
            states[TOP_REMOTE].rawIR.visible &&
            states[LEFT_REMOTE].rawIR.visible;
+}
+
+
+bool WiiMoteManager::IsIRActiveForDrawing() const
+{
+    if (!AllRemotesConnected())
+        return false;
+
+    const auto& top = states[TOP_REMOTE];
+    const auto& left = states[LEFT_REMOTE];
+
+    if (!top.irActive || !left.irActive ||
+        !top.rawIR.visible || !left.rawIR.visible)
+        return false;
+
+    // Do NOT require both remotes to report on the same Bluetooth poll.
+    // They normally alternate. As long as at least one remote has seen the
+    // emitter very recently, keep the stroke alive and use the other remote's
+    // last-known value.
+    //
+    // A value of 1 means the remote was seen on the previous application
+    // update. This small drawing grace is separate from the longer tracker
+    // grace: it prevents an occasional empty poll from breaking a stroke,
+    // while still stopping drawing almost immediately when the emitter is
+    // actually turned off.
+    constexpr int DRAWING_GRACE_FRAMES = 1;
+
+    return (top.framesSinceSeen <= DRAWING_GRACE_FRAMES ||
+        left.framesSinceSeen <= DRAWING_GRACE_FRAMES);
 }
 
 bool WiiMoteManager::IsReady() const
@@ -583,6 +621,8 @@ bool WiiMoteManager::TryCaptureCalibrationPoint()
         "TOP  X -> screen X: scale=%f offset=%f\n"
         "LEFT X -> screen Y: scale=%f offset=%f\n"
         "Both remotes are required during runtime tracking.\n"
+        "DRAWING READY - IR is detected and drawing can start now.\n"
+        "Move the IR emitter to draw; removing it breaks the current stroke.\n"
         "==================================================\n",
         topCalibration.scale, topCalibration.offset,
         leftCalibration.scale, leftCalibration.offset);
