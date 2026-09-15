@@ -12,7 +12,7 @@ namespace WiiMoteConfig
     constexpr int IR_WIDTH = 1024;
     constexpr int IR_HEIGHT = 768;
 
-    constexpr int IR_SENSITIVITY = 1;
+    constexpr int IR_SENSITIVITY = 5;
 
     // AirGraffiti canvas.
     constexpr int OUTPUT_WIDTH = 1280;

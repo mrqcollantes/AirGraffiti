@@ -59,19 +59,8 @@ public:
 
     bool IsCalibrated() const;
 
-    // Fits two independent 1D mappings:
-    // TOP remote X  -> canvas X
-    // LEFT remote X -> canvas Y
-    //
-    // The calibration samples are expected to be in this order:
-    // 0 = top-left
-    // 1 = top-right
-    // 2 = bottom-right
-    // 3 = bottom-left
-    bool Calculate(
-        const std::vector<WiiMoteCalibrationSample>& samples,
-        float canvasWidth,
-        float canvasHeight);
+    // Capture order (0=TL, 1=TR, 2=BR, 3=BL).
+    bool Calculate(const std::vector<WiiMoteCalibrationSample>& samples, float canvasWidth, float canvasHeight);
 
     // Both raw X values are required to produce a valid point.
     FusedPoint Apply(float topRawX, float leftRawX) const;
@@ -80,10 +69,7 @@ public:
     const WiiMoteAxisCalibration& GetLeftCalibration() const;
 
 private:
-    static bool FitAxis(
-        const std::vector<float>& raw,
-        const std::vector<float>& target,
-        WiiMoteAxisCalibration& result);
+    static bool FitAxis(const std::vector<float>& raw, const std::vector<float>& target, WiiMoteAxisCalibration& result);
 
     WiiMoteAxisCalibration topX;
     WiiMoteAxisCalibration leftX;

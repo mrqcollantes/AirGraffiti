@@ -33,10 +33,6 @@ public:
     bool IsReady() const;
     bool AllRemotesConnected() const;
     bool AllRemotesSeeingIR() const;
-    // Runtime drawing is allowed while the two-remotes stream is healthy.
-    // A grace-held reading may still be used for tracking, but if BOTH
-    // remotes missed the IR source this poll, the current drawing stroke is
-    // considered interrupted so re-acquisition starts a new stroke.
     bool IsIRActiveForDrawing() const;
 
     std::size_t GetRemoteCount() const;
@@ -48,12 +44,6 @@ public:
         bool irActive = false;
         int visiblePointCount = 0;
         WiiMoteIRPoint rawIR;
-
-        // Application updates since this remote last reported a visible IR dot.
-        // This is intentionally aged every Update(), not only when a
-        // Bluetooth report arrives, so a source that is truly turned off
-        // cannot leave the last-known point alive forever.
-        // See WiiMoteManager::IR_STALE_GRACE_FRAMES.
         int framesSinceSeen = 0;
     };
 
@@ -95,13 +85,7 @@ private:
     int calibrationStep = 0;
     std::vector<WiiMoteCalibrationSample> calibrationSamples;
 
-    // Stability is judged over a rolling window rather than a single
-    // frame-to-frame delta, so a shaky hand doesn't stall calibration.
-    // A sample is captured using the *average* of the window, once the
-    // window has been stable for long enough.
     static constexpr std::size_t STABILITY_WINDOW = 15;
-
-    // A single occluded/glitched IR frame during an otherwise-stable hold doesn't reset progress.
     static constexpr int MAX_GRACE_FRAMES = 2;
 
     std::deque<float> topXWindow;
@@ -109,23 +93,10 @@ private:
     int stableFrames = 0;
     int unstableStreak = 0;
 
-    // After a corner is captured, calibration waits for the source to
-    // move away by more than jitter before it will start accumulating a
-    // STABLE window for the next corner - otherwise a hand that's still
-    // sitting on the just-captured point would immediately "capture" it
-    // again next frame.
     bool awaitingMovement = false;
     float lastCapturedTopX = 0.0f;
     float lastCapturedLeftX = 0.0f;
 
-    // Two remotes streaming continuous IR over one Bluetooth radio are
-    // commonly serviced by the host on alternating polls rather than both
-    // in the same tick - each remote's dot genuinely disappears from that
-    // remote's report every other poll or so even though the physical IR
-    // source never moved or was occluded. A remote's last-known-good IR
-    // reading is held as "still active" for up to this many consecutive
-    // missed polls before it's treated as truly lost. Tune upward if two
-    // remotes still don't both read at once on a particular host/radio.
     static constexpr int IR_STALE_GRACE_FRAMES = 4;
 
     WiiMoteManager(const WiiMoteManager&) = delete;

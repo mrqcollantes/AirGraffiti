@@ -67,8 +67,6 @@ bool WiiMoteCalibration::Calculate(
                 break;
 
             default:
-                // Four samples are normally used. If more are supplied,
-                // only the defined four screen targets are meaningful.
                 return false;
         }
 
@@ -100,12 +98,7 @@ bool WiiMoteCalibration::FitAxis(
     if (raw.size() != target.size() || raw.size() < 2)
         return false;
 
-    // Least-squares fit for:
-    //
     // target = raw * scale + offset
-    //
-    // This lets all four calibration corners contribute to the
-    // 1D calibration rather than relying on only two points.
     double sumRaw = 0.0;
     double sumTarget = 0.0;
     double sumRawSquared = 0.0;
@@ -128,11 +121,8 @@ bool WiiMoteCalibration::FitAxis(
     if (std::fabs(denominator) < EPSILON)
         return false;
 
-    const double scale =
-        (count * sumRawTarget - sumRaw * sumTarget) / denominator;
-
-    const double offset =
-        (sumTarget - scale * sumRaw) / count;
+    const double scale = (count * sumRawTarget - sumRaw * sumTarget) / denominator;
+    const double offset = (sumTarget - scale * sumRaw) / count;
 
     result.calibrated = true;
     result.scale = static_cast<float>(scale);

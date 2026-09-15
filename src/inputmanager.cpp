@@ -33,8 +33,6 @@ void InputManager::Update()
 
             case SDL_EVENT_MOUSE_MOTION:
                 // Always track the physical mouse position.
-                // ImGui capture should not prevent the application
-                // from knowing where the mouse is.
                 pointer.x = event.motion.x;
                 pointer.y = event.motion.y;
                 break;

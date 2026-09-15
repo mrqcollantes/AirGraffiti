@@ -60,13 +60,8 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
     // Pin the panel to the bottom of the window and make it full width.
     ImGui::SetNextWindowPos(ImVec2(0, windowHeight), ImGuiCond_Always, ImVec2(0, 1));
     ImGui::SetNextWindowSize(ImVec2(windowWidth, panelHeight), ImGuiCond_Always);
-    ImGuiWindowFlags panelFlags =
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse;
+    ImGuiWindowFlags panelFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
     ImGui::Begin("AirGraffiti", nullptr, panelFlags);
-
-    // SIZE
     ImGui::Text("SIZE");
     ImGui::SameLine();
 

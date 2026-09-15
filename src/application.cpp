@@ -41,10 +41,7 @@ void Application::Run()
 
 void Application::Update()
 {
-    // ---------------------------------------------------------
     // Mouse input
-    // ---------------------------------------------------------
-
     Pointer& mouse = input.GetPointer();
 
     float displayWidth = 0.0f;
@@ -60,45 +57,28 @@ void Application::Update()
         const float mouseY = mouse.y;
 
         // Do not draw inside the UI panel.
-        const bool mouseOverUI =
-            mouseY >= (displayHeight - UI::PANEL_HEIGHT);
+        const bool mouseOverUI = mouseY >= (displayHeight - UI::PANEL_HEIGHT);
 
         if (!mouseOverUI)
         {
-            const float scaleX =
-                static_cast<float>(canvas.GetWidth()) / displayWidth;
+            const float scaleX = static_cast<float>(canvas.GetWidth()) / displayWidth;
+            const float scaleY = static_cast<float>(canvas.GetHeight()) / displayHeight;
 
-            const float scaleY =
-                static_cast<float>(canvas.GetHeight()) / displayHeight;
-
-            brush.DrawStroke(
-                canvas,
-                renderer,
+            brush.DrawStroke(canvas, renderer,
                 static_cast<int>(mouse.previousX * scaleX),
                 static_cast<int>(mouse.previousY * scaleY),
                 static_cast<int>(mouseX * scaleX),
-                static_cast<int>(mouseY * scaleY)
-            );
+                static_cast<int>(mouseY * scaleY));
         }
     }
 
-    // ---------------------------------------------------------
     // Wii Remote / IR input
-    // ---------------------------------------------------------
-
     wiimoteManager.Update();
 
     const FusedPoint& fused =
         wiimoteManager.GetFusedPoint();
 
-    // ---------------------------------------------------------
     // IR lost
-    // ---------------------------------------------------------
-
-    // Grace frames are useful for keeping the two-remote tracker stable, but
-    // they should NOT keep a drawing stroke alive when the IR source is gone.
-    // IsIRActiveForDrawing() detects the intentional "both remotes missed the
-    // source" case and forces the next reacquisition to start a new stroke.
     if (!fused.valid || !wiimoteManager.IsIRActiveForDrawing())
     {
         // If IR was controlling the UI, release the ImGui button.
@@ -117,104 +97,56 @@ void Application::Update()
         return;
     }
 
-    // ---------------------------------------------------------
     // IR position
-    // ---------------------------------------------------------
-
     const int x = static_cast<int>(fused.x);
     const int y = static_cast<int>(fused.y);
 
     // Convert canvas coordinates to ImGui/window coordinates.
-    if (canvas.GetWidth() <= 0 ||
-        canvas.GetHeight() <= 0 ||
-        displayWidth <= 0.0f ||
-        displayHeight <= 0.0f)
+    if (canvas.GetWidth() <= 0 || canvas.GetHeight() <= 0 || displayWidth <= 0.0f || displayHeight <= 0.0f)
     {
         return;
     }
 
-    const float windowX =
-        static_cast<float>(x) *
-        (displayWidth / static_cast<float>(canvas.GetWidth()));
+    const float windowX = static_cast<float>(x) * (displayWidth / static_cast<float>(canvas.GetWidth()));
+    const float windowY = static_cast<float>(y) * (displayHeight / static_cast<float>(canvas.GetHeight()));
 
-    const float windowY =
-        static_cast<float>(y) *
-        (displayHeight / static_cast<float>(canvas.GetHeight()));
-
-    // ---------------------------------------------------------
     // Determine whether IR is over the UI
-    // ---------------------------------------------------------
-
     const bool overUI =
         windowY >= (displayHeight - UI::PANEL_HEIGHT);
 
-    // ---------------------------------------------------------
     // New IR interaction
-    // ---------------------------------------------------------
-
     if (!irWasActive)
     {
-        // This is the first frame of a new IR interaction.
-        // Never connect this position to the previous IR position.
         previousIRValid = false;
-
-        // Decide whether this interaction belongs to the UI.
         isUIPress = overUI;
     }
 
-    // ---------------------------------------------------------
     // IR controls UI
-    // ---------------------------------------------------------
-
     if (isUIPress)
     {
         ui.SubmitPointerPosition(windowX, windowY);
         ui.SubmitPointerButton(true);
 
-        // We aren't drawing a canvas stroke while interacting
-        // with the UI.
+        // We aren't drawing a canvas stroke while interacting with the UI.
         previousIRValid = false;
     }
-    // ---------------------------------------------------------
     // IR controls canvas
-    // ---------------------------------------------------------
-
     else
     {
         if (previousIRValid)
         {
-            brush.DrawStroke(
-                canvas,
-                renderer,
-                previousIRX,
-                previousIRY,
-                x,
-                y
-            );
+            brush.DrawStroke(canvas, renderer, previousIRX, previousIRY, x, y);
         }
         else
         {
             // First frame of a new IR interaction.
-            // Draw a single point instead of a connecting line.
-            brush.DrawStroke(
-                canvas,
-                renderer,
-                x,
-                y,
-                x,
-                y
-            );
+            brush.DrawStroke(canvas, renderer, x, y, x, y);
         }
 
         previousIRX = x;
         previousIRY = y;
         previousIRValid = true;
     }
-
-    // ---------------------------------------------------------
-    // Remember that IR is currently active
-    // ---------------------------------------------------------
-
     irWasActive = true;
 }
 
