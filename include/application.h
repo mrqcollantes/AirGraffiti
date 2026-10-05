@@ -7,34 +7,35 @@
 #include "brush.h"
 #include "inputmanager.h"
 #include "ui.h"
-#include "wiimotemanager.h"
+#include "camera_manager.h"
 
 class Application
 {
-    public:
-        Application();
+public:
+    Application();
 
-        bool Init();
-        void Run();
-        void Shutdown();
+    bool Init();
+    void Run();
+    void Shutdown();
 
-    private:
-        bool running = false;
+private:
+    bool running = false;
 
-        Renderer renderer;
-        Canvas canvas;
-        Brush brush;
-        InputManager input;
-        UI ui;
-        WiiMoteManager wiimoteManager;
+    Renderer renderer;
+    Canvas canvas;
+    Brush brush;
+    InputManager input;
+    UI ui;
 
-        bool previousIRValid = false;
-        int previousIRX = 0;
-        int previousIRY = 0;
+    CameraManager cameraManager;
 
-        bool irWasActive = false;
-        bool isUIPress = false;
+    bool previousIRValid = false;
+    int previousIRX = 0;
+    int previousIRY = 0;
 
-        void Update();
-        void Render();
+    bool irWasActive = false;
+    bool isUIPress = false;
+
+    void Update();
+    void Render();
 };

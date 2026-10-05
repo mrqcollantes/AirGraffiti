@@ -55,8 +55,7 @@ void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
 
     if (mode == Mode::Eraser)
     {
-        // Eraser stays a solid, reliable disk - a "spray" eraser with
-        // random gaps would leave partially-erased pixels behind.
+        // Eraser stays a solid, reliable disk
         SDL_Color eraseColor = {255, 255, 255, 255};
 
         for (int py = -radius; py <= radius; py++)
@@ -72,10 +71,7 @@ void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
         return;
     }
 
-    // Spray mode: instead of a uniform filled disk, scatter dots with
-    // density that fades from center to edge (a cone, not a hard
-    // circle), plus a little per-dot alpha jitter for grain. This is
-    // what actually reads as "spray can" rather than "marker."
+    // Spray mode uses a randomized, grainy pattern to simulate a spray can effect.
     static thread_local std::mt19937 rng(std::random_device{}());
     std::uniform_real_distribution<float> unit(0.0f, 1.0f);
 
@@ -88,15 +84,11 @@ void Brush::DrawCircle(Canvas& canvas, Renderer& renderer, int x, int y)
             if (dist > static_cast<float>(radius))
                 continue;
 
-            // 0 at center, 1 at edge. Squaring biases coverage toward
-            // the center, like a real spray cone.
+            // 0 at center, 1 at edge. Squaring biases coverage toward the center, like a real spray cone.
             float t = dist / static_cast<float>(radius);
             float density = (1.0f - t) * (1.0f - t);
 
-            // Randomly skip this pixel - less likely to be skipped near
-            // the center, more likely near the edge. This is what
-            // produces the grainy, scattered edge instead of a hard
-            // cutoff.
+            // Randomly skip some points based on density to create a more natural spray effect.
             if (unit(rng) > density)
                 continue;
 
@@ -122,9 +114,7 @@ void Brush::DrawStroke(Canvas& canvas, Renderer& renderer, int x1, int y1, int x
 
     canvas.BeginDraw(renderer);
 
-    // Spray dabs use partial alpha for grain/falloff - make sure the
-    // renderer actually blends it instead of overwriting outright.
-    // Eraser always draws at full alpha, so this doesn't change its look.
+    // Enable blending for semi-transparent spray effects
     SDL_SetRenderDrawBlendMode(renderer.GetSDLRenderer(), SDL_BLENDMODE_BLEND);
 
     if (distance < 1.0f)

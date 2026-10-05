@@ -18,8 +18,7 @@ bool UI::Init(Renderer& renderer)
 
     ImGuiIO& io = ImGui::GetIO();
 
-    // No ini file: the panel is pinned every frame anyway, and we don't
-    // want a collapsed state from a previous run to persist.
+    // No ini file: the panel is pinned every frame anyway, and we don't want a collapsed state from a previous run to persist.
     io.IniFilename = nullptr;
 
     ImGui::StyleColorsDark();
@@ -84,19 +83,13 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
         bool selected = (brush.GetSize() == option.size);
 
         if (selected)
-        {
-            ImGui::PushStyleColor(ImGuiCol_Button,ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-        }
+            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
 
         if (ImGui::Button(option.label, ImVec2(125.0f, 50.0f)))
-        {
             brush.SetSize(option.size);
-        }
 
         if (selected)
-        {
             ImGui::PopStyleColor();
-        }
 
         ImGui::SameLine();
     }
@@ -146,15 +139,11 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
             option.color.a / 255.0f
         );
 
+        // Same border thickness either way; only the selected state additionally tints it white.
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, selected ? 3.0f : 1.0f);
+
         if (selected)
-        {
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
             ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-        }
-        else
-        {
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f );
-        }
 
         if (ImGui::ColorButton(option.id, colorVec,
             ImGuiColorEditFlags_NoPicker |
@@ -168,9 +157,7 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
         ImGui::PopStyleVar();
 
         if (selected)
-        {
             ImGui::PopStyleColor();
-        }
 
         ImGui::SameLine();
     }
@@ -187,43 +174,29 @@ void UI::Draw(Brush& brush, Canvas& canvas, Renderer& renderer)
     bool eraserSelected = brush.GetMode() == Brush::Mode::Eraser;
 
     if (spraySelected)
-    {
         ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-    }
 
     if (ImGui::Button("SPRAY", ImVec2(175.0f, 50.0f)))
-    {
         brush.SetMode(Brush::Mode::Spray);
-    }
 
     if (spraySelected)
-    {
         ImGui::PopStyleColor();
-    }
 
     ImGui::SameLine();
 
     if (eraserSelected)
-    {
-        ImGui::PushStyleColor(ImGuiCol_Button,ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
-    }
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
 
     if (ImGui::Button("ERASER", ImVec2(175.0f, 50.0f)))
-    {
         brush.SetMode(Brush::Mode::Eraser);
-    }
 
     if (eraserSelected)
-    {
         ImGui::PopStyleColor();
-    }
 
     ImGui::SameLine();
 
     if (ImGui::Button("CLEAR CANVAS", ImVec2(175.0f, 50.0f)))
-    {
         canvas.Clear(renderer);
-    }
 
     ImGui::End();
 }

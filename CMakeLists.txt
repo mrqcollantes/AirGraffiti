@@ -13,15 +13,6 @@ set(IMGUI_DIR
     "${CMAKE_SOURCE_DIR}/external/imgui"
 )
 
-set(BUILD_EXAMPLE OFF CACHE BOOL "Build Wiiuse example application")
-set(BUILD_EXAMPLE_SDL OFF CACHE BOOL "Build Wiiuse SDL example application")
-set(INSTALL_EXAMPLES OFF CACHE BOOL "Install Wiiuse example applications")
-
-add_subdirectory(
-    "${CMAKE_SOURCE_DIR}/external/wiiuse"
-    "${CMAKE_BINARY_DIR}/wiiuse"
-)
-
 add_executable(AirGraffiti
 
     src/main.cpp
@@ -32,8 +23,7 @@ add_executable(AirGraffiti
     src/pointer.cpp
     src/renderer.cpp
     src/ui.cpp
-    src/wiimotemanager.cpp
-    src/wiimotecalibration.cpp
+    src/camera_manager.cpp
 
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp
@@ -48,13 +38,8 @@ add_executable(AirGraffiti
 target_include_directories(AirGraffiti PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
     "${SDL3_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/external/wiiuse/src"
     "${IMGUI_DIR}"
     "${IMGUI_DIR}/backends"
-)
-
-target_compile_definitions(AirGraffiti PRIVATE
-    WIIUSE_STATIC
 )
 
 find_library(SDL3_LIBRARY
@@ -71,13 +56,13 @@ endif()
 
 target_link_libraries(AirGraffiti PRIVATE
     "${SDL3_LIBRARY}"
-    wiiuse
 )
 
 if(WIN32)
     target_link_libraries(AirGraffiti PRIVATE
         hid
         setupapi
+        ws2_32
     )
 endif()
 
@@ -106,12 +91,10 @@ message(STATUS "========================================")
 message(STATUS "SDL3:")
 message(STATUS "  Library: ${SDL3_LIBRARY}")
 message(STATUS "")
-message(STATUS "Wiiuse:")
-message(STATUS "  Source: ${CMAKE_SOURCE_DIR}/external/wiiuse")
-message(STATUS "  Static library: enabled")
-message(STATUS "  IR support: enabled")
-message(STATUS "  Maximum remotes: 5")
-message(STATUS "  Default remotes: 2")
+message(STATUS "Raspberry Pi Camera:")
+message(STATUS "  UDP input: enabled")
+message(STATUS "  Camera count: 1")
+message(STATUS "  UDP port: 5005")
 message(STATUS "")
 message(STATUS "Dear ImGui:")
 message(STATUS "  Source: ${IMGUI_DIR}")
